@@ -9,10 +9,12 @@ package com.bantads.autenticacao.model;
  * @author leonardozanotti
  */
 import java.io.Serializable;
-import java.util.UUID;
+import javax.persistence.Basic;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -37,8 +39,25 @@ public class Usuario implements Serializable {
     public Usuario() {
         super();
     }
+    
+    public Usuario(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+        super();
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.cpf = cpf;
+        this.telefone = telefone;
+        this.estado = estado;
+        this.cidade = cidade;
+        this.cep = cep;
+        this.rua = rua;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.cargo = cargo;
+        this.ativo = ativo;
+    }
 
-    public Usuario(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo, UUID saga) {
+    public Usuario(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
         super();
         this.id = id;
         this.nome = nome;
@@ -57,7 +76,9 @@ public class Usuario implements Serializable {
     }
     
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id",unique=true, nullable = false)
     public Long getId() {
         return id;
     }

@@ -63,4 +63,35 @@ public class AuthController {
             return ResponseEntity.status(500).build();
         }
     }
+    
+    @PostMapping("/cadastro")
+    ResponseEntity<Usuario> cadastro(@RequestBody Usuario usuarioDTO) {
+        try {
+            Usuario u = new Usuario(
+                usuarioDTO.getNome(),
+                usuarioDTO.getEmail(),
+                Security.hash(usuarioDTO.getSenha()),
+                usuarioDTO.getCpf(),
+                usuarioDTO.getTelefone(),
+                usuarioDTO.getEstado(),
+                usuarioDTO.getCidade(),
+                usuarioDTO.getCep(),
+                usuarioDTO.getRua(),
+                usuarioDTO.getNumero(),
+                usuarioDTO.getComplemento(),
+                usuarioDTO.getCargo(),
+                usuarioDTO.isAtivo()
+            );
+            Usuario usuario = usuarioRepository.save(u);
+            if (usuario != null) {
+                Usuario response = mapper.map(usuario, Usuario.class);
+                return ResponseEntity.ok().body(response);
+            } else {
+                return ResponseEntity.status(401).build();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.status(500).build();
+        }
+    }
 }
