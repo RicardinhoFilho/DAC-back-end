@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "usuario")
 public class Usuario implements Serializable {
-    private UUID id;
+    private Long id;
     private String nome;
     private String email;
     private String senha;
@@ -33,13 +33,12 @@ public class Usuario implements Serializable {
     private String complemento;    
     private Cargo cargo;
     private boolean ativo;
-    private UUID saga;
 
     public Usuario() {
         super();
     }
 
-    public Usuario(UUID id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo, UUID saga) {
+    public Usuario(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo, UUID saga) {
         super();
         this.id = id;
         this.nome = nome;
@@ -55,16 +54,15 @@ public class Usuario implements Serializable {
         this.complemento = complemento;
         this.cargo = cargo;
         this.ativo = ativo;
-        this.saga = saga;
     }
     
     @Id
     @Column(name = "id")
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -183,14 +181,5 @@ public class Usuario implements Serializable {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    @Column(name = "saga")
-    public UUID getSaga() {
-        return saga;
-    }
-
-    public void setSaga(UUID saga) {
-        this.saga = saga;
     }
 }

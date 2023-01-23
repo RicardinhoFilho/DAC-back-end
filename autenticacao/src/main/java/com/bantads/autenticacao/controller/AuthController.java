@@ -4,13 +4,9 @@
  */
 package com.bantads.autenticacao.controller;
 
-import com.bantads.autenticacao.dto.UsuarioResponseDTO;
-import com.bantads.autenticacao.dto.UsuarioDTO;
 import com.bantads.autenticacao.model.Usuario;
-import com.bantads.autenticacao.repository.UsuarioRepository;
 import com.bantads.autenticacao.utils.Security;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.bantads.autenticacao.repository.AuthRepository;
 /**
  *
  * @author leonardozanotti
@@ -29,20 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping("usuarios")
-public class UsuarioController {
+public class AuthController {
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private AuthRepository usuarioRepository;
 
     @Autowired
     private ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> getUsuario(@PathVariable UUID id) {
+    public ResponseEntity<Usuario> getUsuario(@PathVariable Long id) {
         try {
             Optional<Usuario> usuarioOp = usuarioRepository.findById(id);
 
             if (usuarioOp.isPresent()) {
-                UsuarioResponseDTO gerente = mapper.map(usuarioOp.get(), UsuarioResponseDTO.class);
+                Usuario gerente = mapper.map(usuarioOp.get(), Usuario.class);
                 return ResponseEntity.ok(gerente);
             } else {
                 return ResponseEntity.notFound().build();
@@ -53,11 +50,11 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<UsuarioResponseDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
+    ResponseEntity<Usuario> login(@RequestBody Usuario usuarioDTO) {
         try {
             Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
             if (usuario != null) {
-                UsuarioResponseDTO response = mapper.map(usuario, UsuarioResponseDTO.class);
+                Usuario response = mapper.map(usuario, Usuario.class);
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();

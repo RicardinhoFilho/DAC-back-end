@@ -9,22 +9,15 @@ package com.bantads.autenticacao.repository;
  * @author leonardozanotti
  */
 import com.bantads.autenticacao.model.Usuario;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 
-public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
+public interface AuthRepository extends JpaRepository<Usuario, Long> {
     public Usuario findByEmail(String email);
-    public Usuario findBySaga(UUID saga);
-
     @Query("from Usuario where email = :email and senha = :senha and ativo = true")
     public Usuario login(@Param("email") String email,
             @Param("senha") String senha);
-
-    @Transactional
-    public Long deleteBySaga(UUID saga);
 }

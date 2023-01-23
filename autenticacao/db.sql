@@ -4,10 +4,8 @@ CREATE DATABASE autenticacao;
 
 \c autenticacao;
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 CREATE TABLE usuario (
-	id uuid PRIMARY KEY DEFAULT uuid_generate_v4 (),
+	id SERIAL PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
 	email VARCHAR(50) NOT NULL,
 	senha VARCHAR(1000) NOT NULL,
@@ -20,8 +18,7 @@ CREATE TABLE usuario (
 	numero INT NOT NULL,
 	complemento VARCHAR(255),
 	ativo BOOLEAN NOT NULL,
-	cargo INT NOT NULL,
-	saga uuid DEFAULT uuid_generate_v4 ()
+	cargo INT NOT NULL
 );
 
 INSERT INTO usuario (nome, email, senha, cpf, telefone, estado, cidade, cep, rua, numero, complemento, ativo, cargo) VALUES
