@@ -4,14 +4,12 @@
  */
 package com.bantads.cliente.controller;
 
-import com.bantads.cliente.model.Cliente;
-import com.bantads.cliente.repository.ClienteRepository;
-import com.bantads.cliente.utils.Security;
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
+
+import com.bantads.cliente.model.Cliente;
+import com.bantads.cliente.repository.ClienteRepository;
+import com.bantads.cliente.utils.Security;
+
 /**
  *
  * @author leonardozanotti
@@ -36,23 +38,23 @@ public class ClienteController {
     private ModelMapper mapper;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Cliente>> getUsuario() {
+    public ResponseEntity<List<Cliente>> getCliente() {
         try {
-            List<Cliente> usuarioOp = clienteRepository.findAll();
+            List<Cliente> clienteOp = clienteRepository.findAll();
 
-            return ResponseEntity.ok(usuarioOp);
+            return ResponseEntity.ok(clienteOp);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
     }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<Cliente> getUsuario(@PathVariable Long id) {
-        try {
-            Optional<Cliente> usuarioOp = clienteRepository.findById(id);
 
-            if (usuarioOp.isPresent()) {
-                Cliente gerente = mapper.map(usuarioOp.get(), Cliente.class);
+    @GetMapping("/{id}")
+    public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
+        try {
+            Optional<Cliente> clienteOp = clienteRepository.findById(id);
+
+            if (clienteOp.isPresent()) {
+                Cliente gerente = mapper.map(clienteOp.get(), Cliente.class);
                 return ResponseEntity.ok(gerente);
             } else {
                 return ResponseEntity.notFound().build();
@@ -63,11 +65,11 @@ public class ClienteController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<Cliente> login(@RequestBody Cliente usuarioDTO) {
+    ResponseEntity<Cliente> login(@RequestBody Cliente clienteDTO) {
         try {
-            Cliente usuario = clienteRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
-            if (usuario != null) {
-                Cliente response = mapper.map(usuario, Cliente.class);
+            Cliente cliente = clienteRepository.login(clienteDTO.getEmail(), Security.hash(clienteDTO.getSenha()));
+            if (cliente != null) {
+                Cliente response = mapper.map(cliente, Cliente.class);
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
@@ -76,28 +78,27 @@ public class ClienteController {
             return ResponseEntity.status(500).build();
         }
     }
-    
+
     @PostMapping("/cadastro")
-    ResponseEntity<Cliente> cadastro(@RequestBody Cliente usuarioDTO) {
+    ResponseEntity<Cliente> cadastro(@RequestBody Cliente clienteDTO) {
         try {
             Cliente u = new Cliente(
-                usuarioDTO.getNome(),
-                usuarioDTO.getEmail(),
-                Security.hash(usuarioDTO.getSenha()),
-                usuarioDTO.getCpf(),
-                usuarioDTO.getTelefone(),
-                usuarioDTO.getEstado(),
-                usuarioDTO.getCidade(),
-                usuarioDTO.getCep(),
-                usuarioDTO.getRua(),
-                usuarioDTO.getNumero(),
-                usuarioDTO.getComplemento(),
-                usuarioDTO.getCargo(),
-                usuarioDTO.isAtivo()
-            );
-            Cliente usuario = clienteRepository.save(u);
-            if (usuario != null) {
-                Cliente response = mapper.map(usuario, Cliente.class);
+                    clienteDTO.getNome(),
+                    clienteDTO.getEmail(),
+                    Security.hash(clienteDTO.getSenha()),
+                    clienteDTO.getCpf(),
+                    clienteDTO.getTelefone(),
+                    clienteDTO.getEstado(),
+                    clienteDTO.getCidade(),
+                    clienteDTO.getCep(),
+                    clienteDTO.getRua(),
+                    clienteDTO.getNumero(),
+                    clienteDTO.getComplemento(),
+                    clienteDTO.getCargo(),
+                    clienteDTO.isAtivo());
+            Cliente cliente = clienteRepository.save(u);
+            if (cliente != null) {
+                Cliente response = mapper.map(cliente, Cliente.class);
                 return new ResponseEntity<Cliente>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.status(401).build();

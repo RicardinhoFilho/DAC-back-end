@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bantads.gerente.bantadsgerente.data.GerenteRepository;
 import com.bantads.gerente.bantadsgerente.model.Gerente;
 import com.bantads.gerente.bantadsgerente.utils.Security;
+import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @CrossOrigin
 @RestController
-@RequestMapping("gerentes")
+@RequestMapping("gerente")
 public class GerenteController {
     @Autowired
     private GerenteRepository gerenteRepository;
@@ -29,6 +31,16 @@ public class GerenteController {
     @Autowired
     private ModelMapper mapper;
 
+    @GetMapping("/list")
+    public ResponseEntity<List<Gerente>> getGerente() {
+        try {
+            List<Gerente> gerentes = gerenteRepository.findAll();
+            return ResponseEntity.ok(gerentes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<Gerente> getGerente(@PathVariable Long id) {
         try {
@@ -39,6 +51,21 @@ public class GerenteController {
                 return ResponseEntity.ok(gerente);
             } else {
                 return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @PostMapping("/login")
+    ResponseEntity<Gerente> login(@RequestBody Gerente gerente) {
+        try {
+            Gerente g = gerenteRepository.login(gerente.getEmail(), Security.hash(gerente.getSenha()));
+            if (g != null) {
+                Gerente response = mapper.map(g, Gerente.class);
+                return ResponseEntity.ok().body(response);
+            } else {
+                return ResponseEntity.status(401).build();
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
@@ -61,7 +88,7 @@ public class GerenteController {
     }
 
     @PostMapping("/novo")
-    ResponseEntity<Gerente> cadastro(@RequestBody Gerente gerente) {
+    public ResponseEntity<Gerente> cadastro(@RequestBody Gerente gerente) {
         try {
             Gerente g = new Gerente(
                     gerente.getNome(),
@@ -92,11 +119,27 @@ public class GerenteController {
                     return ResponseEntity.status(409).build();
                 Gerente gerente = gerenteOp.get();
                 gerente.setEmail(gerenteUp.getEmail());
-                gerente.setSenha(gerenteUp.getSenha());
+                gerente.setSenha(Security.hash(gerenteUp.getSenha()));
                 gerente.setNome(gerenteUp.getNome());
                 gerente.setCpf(gerenteUp.getCpf());
                 gerente.setTelefone(gerenteUp.getTelefone());
                 gerente = gerenteRepository.save(gerente);
+                return ResponseEntity.ok(gerente);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Gerente> deleteGerente(@PathVariable Long id) {
+        try {
+            Optional<Gerente> gerenteOp = gerenteRepository.findById(id);
+            if (gerenteOp.isPresent()) {
+                Gerente gerente = mapper.map(gerenteOp, Gerente.class);
+                gerenteRepository.delete(gerente);
                 return ResponseEntity.ok(gerente);
             } else {
                 return ResponseEntity.notFound().build();
