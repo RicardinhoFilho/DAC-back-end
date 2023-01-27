@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.bantads.autenticacao.model;
+package com.bantads.cliente.model;
 
 /**
  *
@@ -19,8 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "usuario")
-public class Usuario implements Serializable {
+@Table(name = "cliente")
+public class Cliente implements Serializable {
     private Long id;
     private String nome;
     private String email;
@@ -36,11 +36,11 @@ public class Usuario implements Serializable {
     private Cargo cargo;
     private boolean ativo;
 
-    public Usuario() {
+    public Cliente() {
         super();
     }
     
-    public Usuario(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+    public Cliente(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
         super();
         this.nome = nome;
         this.email = email;
@@ -57,7 +57,7 @@ public class Usuario implements Serializable {
         this.ativo = ativo;
     }
 
-    public Usuario(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+    public Cliente(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
         super();
         this.id = id;
         this.nome = nome;

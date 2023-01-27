@@ -2,11 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.bantads.autenticacao.controller;
+package com.bantads.cliente.controller;
 
-import com.bantads.autenticacao.model.Usuario;
-import com.bantads.autenticacao.utils.Security;
+import com.bantads.cliente.model.Cliente;
+import com.bantads.cliente.repository.ClienteRepository;
+import com.bantads.cliente.utils.Security;
 import java.util.Optional;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.bantads.autenticacao.repository.AuthRepository;
-import java.util.List;
 import org.springframework.http.HttpStatus;
 /**
  *
@@ -27,18 +27,18 @@ import org.springframework.http.HttpStatus;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("auth")
-public class AuthController {
+@RequestMapping("cliente")
+public class ClienteController {
     @Autowired
-    private AuthRepository usuarioRepository;
+    private ClienteRepository clienteRepository;
 
     @Autowired
     private ModelMapper mapper;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Usuario>> getUsuario() {
+    public ResponseEntity<List<Cliente>> getUsuario() {
         try {
-            List<Usuario> usuarioOp = usuarioRepository.findAll();
+            List<Cliente> usuarioOp = clienteRepository.findAll();
 
             return ResponseEntity.ok(usuarioOp);
         } catch (Exception e) {
@@ -47,12 +47,12 @@ public class AuthController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuario(@PathVariable Long id) {
+    public ResponseEntity<Cliente> getUsuario(@PathVariable Long id) {
         try {
-            Optional<Usuario> usuarioOp = usuarioRepository.findById(id);
+            Optional<Cliente> usuarioOp = clienteRepository.findById(id);
 
             if (usuarioOp.isPresent()) {
-                Usuario gerente = mapper.map(usuarioOp.get(), Usuario.class);
+                Cliente gerente = mapper.map(usuarioOp.get(), Cliente.class);
                 return ResponseEntity.ok(gerente);
             } else {
                 return ResponseEntity.notFound().build();
@@ -63,11 +63,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<Usuario> login(@RequestBody Usuario usuarioDTO) {
+    ResponseEntity<Cliente> login(@RequestBody Cliente usuarioDTO) {
         try {
-            Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
+            Cliente usuario = clienteRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
             if (usuario != null) {
-                Usuario response = mapper.map(usuario, Usuario.class);
+                Cliente response = mapper.map(usuario, Cliente.class);
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
@@ -78,9 +78,9 @@ public class AuthController {
     }
     
     @PostMapping("/cadastro")
-    ResponseEntity<Usuario> cadastro(@RequestBody Usuario usuarioDTO) {
+    ResponseEntity<Cliente> cadastro(@RequestBody Cliente usuarioDTO) {
         try {
-            Usuario u = new Usuario(
+            Cliente u = new Cliente(
                 usuarioDTO.getNome(),
                 usuarioDTO.getEmail(),
                 Security.hash(usuarioDTO.getSenha()),
@@ -95,10 +95,10 @@ public class AuthController {
                 usuarioDTO.getCargo(),
                 usuarioDTO.isAtivo()
             );
-            Usuario usuario = usuarioRepository.save(u);
+            Cliente usuario = clienteRepository.save(u);
             if (usuario != null) {
-                Usuario response = mapper.map(usuario, Usuario.class);
-                return new ResponseEntity<Usuario>(HttpStatus.CREATED);
+                Cliente response = mapper.map(usuario, Cliente.class);
+                return new ResponseEntity<Cliente>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.status(401).build();
             }

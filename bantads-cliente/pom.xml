@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bantads</groupId>
-	<artifactId>autenticacao</artifactId>
+	<artifactId>cliente</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>bantads-autenticacao</name>
+	<name>bantads-cliente</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
