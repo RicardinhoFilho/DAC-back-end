@@ -17,6 +17,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     public Cliente findByEmail(String email);
+    public Cliente findByCpf(String cpf);
+    public boolean existsByCpf(String cpf);
     @Query("from Cliente where email = :email and senha = :senha and ativo = true")
     public Cliente login(@Param("email") String email,
             @Param("senha") String senha);

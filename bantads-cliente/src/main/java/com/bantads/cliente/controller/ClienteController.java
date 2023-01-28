@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bantads.cliente.model.Cliente;
 import com.bantads.cliente.repository.ClienteRepository;
 import com.bantads.cliente.utils.Security;
+import org.springframework.web.bind.annotation.PutMapping;
 
 /**
  *
@@ -64,6 +65,36 @@ public class ClienteController {
         }
     }
 
+    @GetMapping("/por-cpf/{cpf}")
+    public ResponseEntity<Cliente> getClientePorCpf(@PathVariable String cpf) {
+        try {
+            Cliente cliente = clienteRepository.findByCpf(cpf);
+
+            if (cliente != null) {
+                return ResponseEntity.ok(cliente);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @GetMapping("/por-email/{email}")
+    public ResponseEntity<Cliente> getClientePorEmail(@PathVariable String email) {
+        try {
+            Cliente cliente = clienteRepository.findByEmail(email);
+
+            if (cliente != null) {
+                return ResponseEntity.ok(cliente);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
     @PostMapping("/login")
     ResponseEntity<Cliente> login(@RequestBody Cliente clienteDTO) {
         try {
@@ -82,6 +113,8 @@ public class ClienteController {
     @PostMapping("/cadastro")
     ResponseEntity<Cliente> cadastro(@RequestBody Cliente clienteDTO) {
         try {
+            if (clienteRepository.existsByCpf(clienteDTO.getCpf()))
+                return ResponseEntity.status(409).build();
             Cliente u = new Cliente(
                     clienteDTO.getNome(),
                     clienteDTO.getEmail(),
@@ -105,6 +138,35 @@ public class ClienteController {
             }
         } catch (Exception e) {
             System.out.println(e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Cliente> putCliente(@PathVariable Long id, @RequestBody Cliente clienteUp) {
+        try {
+            Optional<Cliente> clienteOp = clienteRepository.findById(id);
+            if (clienteOp.isPresent()) {
+                Cliente cliente = clienteOp.get();
+                cliente.setNome(clienteUp.getNome());
+                cliente.setEmail(clienteUp.getEmail());
+                cliente.setSenha(Security.hash(clienteUp.getSenha()));
+                cliente.setCpf(clienteUp.getCpf());
+                cliente.setTelefone(clienteUp.getTelefone());
+                cliente.setEstado(clienteUp.getEstado());
+                cliente.setCidade(clienteUp.getCidade());
+                cliente.setCep(clienteUp.getCep());
+                cliente.setRua(clienteUp.getRua());
+                cliente.setNumero(clienteUp.getNumero());
+                cliente.setComplemento(clienteUp.getComplemento());
+                cliente.setCargo(clienteUp.getCargo());
+                cliente.setAtivo(clienteUp.isAtivo());
+                cliente = clienteRepository.save(cliente);
+                return ResponseEntity.ok(cliente);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
     }

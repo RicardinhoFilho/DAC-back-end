@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface GerenteRepository extends JpaRepository<Gerente, Long> {
     public Gerente findByCpf(String cpf);
+    public Gerente findByEmail(String email);
     public boolean existsByCpf(String cpf);
     @Query("from Gerente where email = :email and senha = :senha")
     public Gerente login(@Param("email") String email,

@@ -8,7 +8,6 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const axios = require('axios').default;
 
 // Configs
 const app = express();
@@ -67,18 +66,6 @@ function verifyJWT(req, res, next) {
     req.userId = decoded.id;
     next();
   });
-}
-
-async function cpfExistsGerente(gerente) {
-  let response = await axios
-    .get(`${process.env.HOST_GERENTE}${process.env.PATH_GERENTE}/por-cpf/${gerente.cpf.toString()}`)
-    .then((response) => response.data)
-    .catch(() => null);
-
-  if (!!response && !!gerente.id) {
-    return gerente.id != response.id;
-  }
-  return !!response;
 }
 
 // ORQUESTRADOR
@@ -144,6 +131,51 @@ app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res) => {
   })(req, res, next);
 });
 
+app.put(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_CLIENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar o cliente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(`${process.env.PATH_CLIENTE}/por-cpf/:cpf`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_CLIENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o cliente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(`${process.env.PATH_CLIENTE}/por-email/:email`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_CLIENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o cliente.' };
+      }
+    },
+  })(req, res, next);
+});
+
 // GERENTE
 app.post(process.env.PATH_GERENTE + '/novo', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
@@ -160,23 +192,18 @@ app.post(process.env.PATH_GERENTE + '/novo', verifyJWT, async (req, res, next) =
 });
 
 app.put(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
-  const cpfExists = await cpfExistsGerente(req.body);
-  if (!cpfExists) {
-    httpProxy(process.env.HOST_GERENTE, {
-      userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-        if (proxyRes.statusCode == 200) {
-          var str = Buffer.from(proxyResData).toString('utf-8');
-          userRes.status(200);
-          return str;
-        } else {
-          userRes.status(proxyRes.statusCode);
-          return { message: 'Um erro ocorreu ao alterar o gerente.' };
-        }
-      },
-    })(req, res, next);
-  } else {
-    return res.status(409).json({ message: 'CPF já cadastrado para outro gerente.' });
-  }
+  httpProxy(process.env.HOST_GERENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar o gerente.' };
+      }
+    },
+  })(req, res, next);
 });
 
 app.delete(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
@@ -208,7 +235,22 @@ app.get(`${process.env.PATH_GERENTE}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
-app.post(`${process.env.PATH_GERENTE}/por-cpf/:cpf`, verifyJWT, (req, res, next) => {
+app.get(`${process.env.PATH_GERENTE}/por-cpf/:cpf`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_GERENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(`${process.env.PATH_GERENTE}/por-email/:email`, verifyJWT, (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 200) {

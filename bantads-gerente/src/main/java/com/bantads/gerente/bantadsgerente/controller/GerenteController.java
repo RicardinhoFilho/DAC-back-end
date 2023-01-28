@@ -72,10 +72,25 @@ public class GerenteController {
         }
     }
 
-    @PostMapping("/por-cpf/{cpf}")
+    @GetMapping("/por-cpf/{cpf}")
     public ResponseEntity<Gerente> getGerentePorCpf(@PathVariable String cpf) {
         try {
             Gerente gerente = gerenteRepository.findByCpf(cpf);
+
+            if (gerente != null) {
+                return ResponseEntity.ok(gerente);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    
+    @GetMapping("/por-email/{email}")
+    public ResponseEntity<Gerente> getGerentePorEmail(@PathVariable String email) {
+        try {
+            Gerente gerente = gerenteRepository.findByEmail(email);
 
             if (gerente != null) {
                 return ResponseEntity.ok(gerente);
@@ -90,6 +105,8 @@ public class GerenteController {
     @PostMapping("/novo")
     public ResponseEntity<Gerente> cadastro(@RequestBody Gerente gerente) {
         try {
+            if (gerenteRepository.existsByCpf(gerente.getCpf()))
+                return ResponseEntity.status(409).build();
             Gerente g = new Gerente(
                     gerente.getNome(),
                     gerente.getEmail(),
@@ -114,8 +131,6 @@ public class GerenteController {
         try {
             Optional<Gerente> gerenteOp = gerenteRepository.findById(id);
             if (gerenteOp.isPresent()) {
-                if (gerenteRepository.existsByCpf(gerenteUp.getCpf()))
-                    return ResponseEntity.status(409).build();
                 Gerente gerente = gerenteOp.get();
                 gerente.setEmail(gerenteUp.getEmail());
                 gerente.setSenha(Security.hash(gerenteUp.getSenha()));
