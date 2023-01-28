@@ -72,10 +72,10 @@ public class GerenteController {
         }
     }
 
-    @PostMapping("/por-cpf")
-    public ResponseEntity<Gerente> getGerentePorCpf(@RequestBody Gerente gerenteBody) {
+    @PostMapping("/por-cpf/{cpf}")
+    public ResponseEntity<Gerente> getGerentePorCpf(@PathVariable String cpf) {
         try {
-            Gerente gerente = gerenteRepository.findByCpf(gerenteBody.getCpf());
+            Gerente gerente = gerenteRepository.findByCpf(cpf);
 
             if (gerente != null) {
                 return ResponseEntity.ok(gerente);
@@ -99,8 +99,7 @@ public class GerenteController {
                     gerente.getCargo());
             Gerente novoGerente = gerenteRepository.save(g);
             if (novoGerente != null) {
-                Gerente response = mapper.map(novoGerente, Gerente.class);
-                return new ResponseEntity<Gerente>(HttpStatus.CREATED);
+                return new ResponseEntity<>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.status(401).build();
             }

@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
+const axios = require('axios').default;
 
 // Configs
 const app = express();
@@ -23,7 +24,7 @@ app.use(cookieParser());
 app.use(cors());
 
 // Proxy
-const loginServiceProxy = httpProxy(process.env.HOST_ORQUESTRADOR + process.env.PATH_ORQUESTRADOR + '/login', {
+const loginServiceProxy = httpProxy(process.env.HOST_ORQUESTRADOR, {
   proxyReqBodyDecorator: function (bodyContent, srcReq) {
     try {
       const { login, senha } = bodyContent;
@@ -56,7 +57,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_ORQUESTRADOR + process.env.
   },
 });
 
-// Json Web Token function
+// auxiliar functions
 function verifyJWT(req, res, next) {
   const token = req.headers['x-access-token'];
   if (!token) return res.status(401).json({ auth: false, message: 'Token não fornecido.' });
@@ -66,6 +67,18 @@ function verifyJWT(req, res, next) {
     req.userId = decoded.id;
     next();
   });
+}
+
+async function cpfExistsGerente(gerente) {
+  let response = await axios
+    .get(`${process.env.HOST_GERENTE}${process.env.PATH_GERENTE}/por-cpf/${gerente.cpf.toString()}`)
+    .then((response) => response.data)
+    .catch(() => null);
+
+  if (!!response && !!gerente.id) {
+    return gerente.id != response.id;
+  }
+  return !!response;
 }
 
 // ORQUESTRADOR
@@ -93,7 +106,7 @@ app.post(process.env.PATH_CLIENTE + '/cadastro', async (req, res, next) => {
 });
 
 app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
-  httpProxy(process.env.HOST_CLIENTE + `/${req.query.id}`, {
+  httpProxy(process.env.HOST_CLIENTE, {
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 200) {
         var str = Buffer.from(proxyResData).toString('utf-8');
@@ -107,8 +120,8 @@ app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
-app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (_req, res) => {
-  httpProxy(process.env.HOST_CLIENTE + '/list', {
+app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res) => {
+  httpProxy(process.env.HOST_CLIENTE, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
     },
@@ -132,6 +145,107 @@ app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (_req, res) => {
 });
 
 // GERENTE
+app.post(process.env.PATH_GERENTE + '/novo', verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_GERENTE, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 201) {
+        userRes.status(201);
+        return { message: 'Gerente criado com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao criar gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.put(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
+  const cpfExists = await cpfExistsGerente(req.body);
+  if (!cpfExists) {
+    httpProxy(process.env.HOST_GERENTE, {
+      userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+        if (proxyRes.statusCode == 200) {
+          var str = Buffer.from(proxyResData).toString('utf-8');
+          userRes.status(200);
+          return str;
+        } else {
+          userRes.status(proxyRes.statusCode);
+          return { message: 'Um erro ocorreu ao alterar o gerente.' };
+        }
+      },
+    })(req, res, next);
+  } else {
+    return res.status(409).json({ message: 'CPF já cadastrado para outro gerente.' });
+  }
+});
+
+app.delete(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_GERENTE, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        userRes.status(200);
+        return { message: 'Gerente excluído com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao alterar o gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(`${process.env.PATH_GERENTE}/:id`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_GERENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.post(`${process.env.PATH_GERENTE}/por-cpf/:cpf`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_GERENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o gerente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(process.env.PATH_GERENTE + '/list', verifyJWT, async (req, res) => {
+  httpProxy(process.env.HOST_GERENTE, {
+    proxyReqBodyDecorator: function (bodyContent, srcReq) {
+      return bodyContent;
+    },
+    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers['Content-Type'] = 'application/json';
+      proxyReqOpts.method = 'POST';
+      return proxyReqOpts;
+    },
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      if (proxyRes.statusCode === 200) {
+        const str = Buffer.from(proxyResData).toString('utf-8');
+        const objBody = JSON.parse(str);
+        userRes.status(200);
+        return { clientes: objBody };
+      } else {
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar gerentes.' };
+      }
+    },
+  })(req, res, next);
+});
 
 // SERVER
 const server = http.createServer(app);
