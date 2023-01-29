@@ -2,6 +2,7 @@ package com.bantads.conta.model;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +12,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="transacao")
 public class Transacao implements Serializable {
-private static final Long serialVersionUID = 1L;
 	
 	@Id
 	//@GeneratedValue
@@ -23,25 +23,22 @@ private static final Long serialVersionUID = 1L;
 	private int tipoTransacao;
 	@Column(name="valor_transacao")
 	private double valorTransacao;
-	@Column(name="destinatario")
-	private int destinatario;
 	@Column(name="saldo")
 	private double saldo;
 	@Column(name="data_transacao")
-	private double data;
+	private Date data;
 	
 	public Transacao() {
 		super();
 	}
 	
-	public Transacao(int id, int idCliente, int tipoTransacao, double valorTransacao, int destinatario, double saldo,
-			double data) {
+	public Transacao(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
+			Date data) {
 		super();
 		this.id = id;
 		this.idCliente = idCliente;
 		this.tipoTransacao = tipoTransacao;
 		this.valorTransacao = valorTransacao;
-		this.destinatario = destinatario;
 		this.saldo = saldo;
 		this.data = data;
 	}
@@ -78,14 +75,6 @@ private static final Long serialVersionUID = 1L;
 		this.valorTransacao = valorTransacao;
 	}
 
-	public int getDestinatario() {
-		return destinatario;
-	}
-
-	public void setDestinatario(int destinatario) {
-		this.destinatario = destinatario;
-	}
-
 	public double getSaldo() {
 		return saldo;
 	}
@@ -94,11 +83,11 @@ private static final Long serialVersionUID = 1L;
 		this.saldo = saldo;
 	}
 
-	public double getData() {
+	public Date getData() {
 		return data;
 	}
 
-	public void setData(double data) {
+	public void setData(Date data) {
 		this.data = data;
 	}
 }

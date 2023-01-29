@@ -2,28 +2,27 @@ package com.bantads.conta.DTO;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.sql.Date;
 
 public class TransacaoDTO implements Serializable {
 	private int id;
 	private int idCliente;
 	private int tipoTransacao;
 	private double valorTransacao;
-	private int destinatario;
 	private double saldo;
-	private double data;
+	private Date data;
 	
 	public TransacaoDTO() {
 		super();
 	}
 	
-	public TransacaoDTO(int id, int idCliente, int tipoTransacao, double valorTransacao, int destinatario, double saldo,
-			double data) {
+	public TransacaoDTO(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
+			Date data) {
 		super();
 		this.id = id;
 		this.idCliente = idCliente;
 		this.tipoTransacao = tipoTransacao;
 		this.valorTransacao = valorTransacao;
-		this.destinatario = destinatario;
 		this.saldo = saldo;
 		this.data = data;
 	}
@@ -60,14 +59,6 @@ public class TransacaoDTO implements Serializable {
 		this.valorTransacao = valorTransacao;
 	}
 
-	public int getDestinatario() {
-		return destinatario;
-	}
-
-	public void setDestinatario(int destinatario) {
-		this.destinatario = destinatario;
-	}
-
 	public double getSaldo() {
 		return saldo;
 	}
@@ -76,11 +67,11 @@ public class TransacaoDTO implements Serializable {
 		this.saldo = saldo;
 	}
 
-	public double getData() {
+	public Date getData() {
 		return data;
 	}
 
-	public void setData(double data) {
+	public void setData(Date data) {
 		this.data = data;
 	}
 }

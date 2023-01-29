@@ -3,6 +3,7 @@ package com.bantads.conta.controller;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,34 +26,37 @@ public class TransacaoController {
 	@Autowired
 	private ModelMapper mapper;
 	
-	public static List<TransacaoDTO> lista = new ArrayList<>();
+	public static List<TransacaoDTO> listaFixa = new ArrayList<>();
 	
 	@GetMapping("/transacaos")
 	public List<TransacaoDTO> obterTodasTransacaos() {
-		return lista;
+		List<Transacao> lista =repositorio.findAll();
+		return lista.stream()
+				.map(item -> mapper.map(item, 
+						TransacaoDTO.class)).
+				collect(Collectors.toList());
 	}
 	
 	@GetMapping("/transacaos/{id}")
 	public TransacaoDTO obterTodosUsuarios(@PathVariable("id") int id) {
-		TransacaoDTO transacao = lista.stream().filter(item -> item.getId() == id).findAny().orElse(null);
+		TransacaoDTO transacao = listaFixa.stream().filter(item -> item.getId() == id).findAny().orElse(null);
 		return transacao;
 	}
 	
 	@PostMapping("/transacao")
 	public TransacaoDTO inserirUsuario(@RequestBody TransacaoDTO transacao) {
-		TransacaoDTO t = lista.stream().max(Comparator.comparing(TransacaoDTO::getId)).orElse(null);
-		if(t == null)
-			transacao.setId(1);
-		else
-			transacao.setId(t.getId() + 1);
-	repositorio.save(mapper.map(transacao, Transacao.class));
-	//lista.add(transacao);
+		//TODO, verificar se conta existe
+		
+		//TODO, atualizar conta cliente
+		
+		//TODO, atualizar transacao
+		repositorio.save(mapper.map(transacao, Transacao.class));
 	return transacao;
 	}
 
 	
 	static {
-		lista.add(new TransacaoDTO(1, 2, 1, 500, 5, 200, 1665958829));
-		lista.add(new TransacaoDTO(2, 3, 1, 100, 5, 100, 1669660753));		
+		//listaFixa.add(new TransacaoDTO(1, 2, 1, 500, 200, ));
+		//listaFixa.add(new TransacaoDTO(2, 3, 1, 100, 100, 1669660753));		
 	}
 }
