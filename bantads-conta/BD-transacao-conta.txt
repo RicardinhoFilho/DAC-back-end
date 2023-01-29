@@ -1,0 +1,42 @@
+CREATE TABLE transacao (
+	id_transacao integer PRIMARY KEY,
+	id_cliente integer,
+	tipo_transacao integer,
+	data_transacao date,
+	saldo float,
+	valor_transacao float,
+	destinatario integer,
+);
+
+insert into transacao values 
+	(1, 1, 1, '2023-01-04',  3000, 3000, 0), 
+	(2, 1, 1, '2023-01-05', 500, 3500, 0), 
+	(3, 1, 2, '2023-01-06', 100, 3400, 0);
+	
+select * from transacao;
+
+ALTER TABLE transacao DROP COLUMN  valor_transacao;
+ALTER TABLE transacao ADD COLUMN destinatario integer;
+ALTER TABLE transacao ALTER COLUMN saldo SET 550.50;
+
+DELETE FROM transacao
+WHERE id_transacao = 1;
+
+CREATE TABLE conta (
+	id_conta integer PRIMARY KEY,
+	id_usuario integer,
+	data date,
+	ativo boolean,
+	saldo float,
+	id_gerente integer,
+	salario float,
+	rejeitado_motivo varchar(60),
+	rejeitado_data date
+);
+
+select * from conta;
+
+insert into conta values 
+	(1, 1, '2023-01-04', true, 3000, 6, 1500, null, null), 
+	(2, 2, '2023-01-05', true, 500, 6, 3000, null, null), 
+	(3, 3, '2023-01-06', true, 100, 7, 2000, null, null);

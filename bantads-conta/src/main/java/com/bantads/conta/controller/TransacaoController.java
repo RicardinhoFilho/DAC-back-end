@@ -3,6 +3,7 @@ package com.bantads.conta.controller;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bantads.conta.DTO.TransacaoDTO;
+import com.bantads.conta.model.Conta;
 import com.bantads.conta.model.Transacao;
+import com.bantads.conta.repository.ContaRepository;
 import com.bantads.conta.repository.TransacaoRepository;
 
 @CrossOrigin
@@ -24,9 +27,9 @@ public class TransacaoController {
 	@Autowired
 	private TransacaoRepository repositorio;
 	@Autowired
+	private ContaRepository repositorioConta;
+	@Autowired
 	private ModelMapper mapper;
-	
-	public static List<TransacaoDTO> listaFixa = new ArrayList<>();
 	
 	@GetMapping("/transacaos")
 	public List<TransacaoDTO> obterTodasTransacaos() {
@@ -37,26 +40,47 @@ public class TransacaoController {
 				collect(Collectors.toList());
 	}
 	
-	@GetMapping("/transacaos/{id}")
-	public TransacaoDTO obterTodosUsuarios(@PathVariable("id") int id) {
-		TransacaoDTO transacao = listaFixa.stream().filter(item -> item.getId() == id).findAny().orElse(null);
-		return transacao;
-	}
-	
 	@PostMapping("/transacao")
 	public TransacaoDTO inserirUsuario(@RequestBody TransacaoDTO transacao) {
-		//TODO, verificar se conta existe
 		
-		//TODO, atualizar conta cliente
+		Optional<Conta> contaOrigem = repositorioConta.findById((long) transacao.getIdCliente());
+		Conta origem = contaOrigem.get();
+		Optional<Conta> contaDestinatario = null;
+		Conta destinatario = null;
 		
-		//TODO, atualizar transacao
+		if(!contaOrigem.isPresent())
+			return null;
+		
+		if(transacao.getDestinatario() != 0) {
+			contaDestinatario = repositorioConta.findById((long) transacao.getDestinatario());
+			destinatario  = contaDestinatario.get();
+		}
+		
 		repositorio.save(mapper.map(transacao, Transacao.class));
-	return transacao;
-	}
+		
+		switch (transacao.getTipoTransacao()) {
+		case 1: //deposito
+			origem.setSaldo(transacao.getSaldo());
+			repositorioConta.save(origem);
+			break;
+			
+		case 2: //saque
+			origem.setSaldo(transacao.getSaldo());
+			repositorioConta.save(origem);
+			break;
+			
+		case 3: //transferencia
+			origem.setSaldo(transacao.getSaldo());
+			repositorioConta.save(origem);
+			destinatario.setSaldo(destinatario.getSaldo() + transacao.getValorTransacao());
+			repositorioConta.save(destinatario);
+			break;
+			
+		default:
+			return null;
+		}
+		
 
-	
-	static {
-		//listaFixa.add(new TransacaoDTO(1, 2, 1, 500, 200, ));
-		//listaFixa.add(new TransacaoDTO(2, 3, 1, 100, 100, 1669660753));		
+	return transacao;
 	}
 }

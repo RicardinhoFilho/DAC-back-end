@@ -27,13 +27,15 @@ public class Transacao implements Serializable {
 	private double saldo;
 	@Column(name="data_transacao")
 	private Date data;
+	@Column(name="destinatario")
+	private int destinatario;
 	
 	public Transacao() {
 		super();
 	}
 	
 	public Transacao(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
-			Date data) {
+			Date data, int destinatario) {
 		super();
 		this.id = id;
 		this.idCliente = idCliente;
@@ -41,6 +43,7 @@ public class Transacao implements Serializable {
 		this.valorTransacao = valorTransacao;
 		this.saldo = saldo;
 		this.data = data;
+		this.destinatario = destinatario;
 	}
 
 	public int getId() {
@@ -89,5 +92,13 @@ public class Transacao implements Serializable {
 
 	public void setData(Date data) {
 		this.data = data;
+	}
+	
+	public int getDestinatario() {
+		return destinatario;
+	}
+
+	public void setDestinatario(int destinatario) {
+		this.destinatario = destinatario;
 	}
 }

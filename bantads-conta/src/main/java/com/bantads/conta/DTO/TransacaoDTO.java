@@ -11,13 +11,14 @@ public class TransacaoDTO implements Serializable {
 	private double valorTransacao;
 	private double saldo;
 	private Date data;
+	private int destinatario;
 	
 	public TransacaoDTO() {
 		super();
 	}
 	
 	public TransacaoDTO(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
-			Date data) {
+			Date data, int destinatario) {
 		super();
 		this.id = id;
 		this.idCliente = idCliente;
@@ -25,6 +26,7 @@ public class TransacaoDTO implements Serializable {
 		this.valorTransacao = valorTransacao;
 		this.saldo = saldo;
 		this.data = data;
+		this.destinatario = destinatario;
 	}
 
 	public int getId() {
@@ -73,5 +75,13 @@ public class TransacaoDTO implements Serializable {
 
 	public void setData(Date data) {
 		this.data = data;
+	}
+	
+	public int getDestinatario() {
+		return destinatario;
+	}
+
+	public void setDestinatario(int destinatario) {
+		this.destinatario = destinatario;
 	}
 }
