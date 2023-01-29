@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,16 +33,24 @@ public class TransacaoController {
 	private ModelMapper mapper;
 	
 	@GetMapping("/transacaos")
-	public List<TransacaoDTO> obterTodasTransacaos() {
-		List<Transacao> lista =repositorio.findAll();
-		return lista.stream()
-				.map(item -> mapper.map(item, 
-						TransacaoDTO.class)).
-				collect(Collectors.toList());
+	public ResponseEntity<List<TransacaoDTO>> obterTodasTransacaos() {
+		try {
+			List<Transacao> lista =repositorio.findAll();
+			List<TransacaoDTO> response = lista.stream()
+					.map(item -> mapper.map(item, 
+							TransacaoDTO.class)).
+					collect(Collectors.toList());
+			ResponseEntity.ok().body(response);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return ResponseEntity.status(500).build();
+		}
+		
 	}
 	
 	@PostMapping("/transacao")
-	public TransacaoDTO inserirUsuario(@RequestBody TransacaoDTO transacao) {
+	public ResponseEntity<TransacaoDTO> inserirUsuario(@RequestBody TransacaoDTO transacao) {
 		
 		Optional<Conta> contaOrigem = repositorioConta.findById((long) transacao.getIdCliente());
 		Conta origem = contaOrigem.get();
@@ -49,7 +58,7 @@ public class TransacaoController {
 		Conta destinatario = null;
 		
 		if(!contaOrigem.isPresent())
-			return null;
+			return ResponseEntity.status(500).build();
 		
 		if(transacao.getDestinatario() != 0) {
 			contaDestinatario = repositorioConta.findById((long) transacao.getDestinatario());
@@ -77,10 +86,9 @@ public class TransacaoController {
 			break;
 			
 		default:
-			return null;
+			return ResponseEntity.status(500).build();
 		}
 		
-
-	return transacao;
+	return ResponseEntity.ok().body(transacao);
 	}
 }

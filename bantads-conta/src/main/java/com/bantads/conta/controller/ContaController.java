@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,24 +23,24 @@ public class ContaController {
 	private ModelMapper mapper;
 	
 	@GetMapping("/obter/{id}")
-	public ContaDTO obterPorId(@PathVariable("id") Long id) {
+	public ResponseEntity<ContaDTO> obterPorId(@PathVariable("id") Long id) {
 		try {
 			Optional<Conta> contaOpt = repositorio.findById(id);
 
 			if (!contaOpt.isPresent())
-				return null;
+				return ResponseEntity.notFound().build();
 
 			Conta conta = contaOpt.get();
 
 			if (conta != null) {
 				ContaDTO response = mapper.map(conta, ContaDTO.class);
-				return response;
+				return ResponseEntity.ok().body(response);
 			} else {
-				return null;
+				return ResponseEntity.ok().body(null);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return null;
+			return ResponseEntity.status(500).build();
 		}
 	}
 
