@@ -1,6 +1,5 @@
 package com.bantads.autenticacao.bantadsautenticacao;
 
-import com.bantads.autenticacao.bantadsautenticacao.tools.Security;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
@@ -14,8 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BantadsAutenticacaoApplication {
 
 	public static void main(String[] args) {
-            System.out.println(Security.hash("Admin2022."));
-		SpringApplication.run(BantadsAutenticacaoApplication.class, args);
+            SpringApplication.run(BantadsAutenticacaoApplication.class, args);
 	}
 
 	@Bean

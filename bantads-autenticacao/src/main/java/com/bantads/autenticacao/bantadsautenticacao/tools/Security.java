@@ -2,7 +2,9 @@ package com.bantads.autenticacao.bantadsautenticacao.tools;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import lombok.Data;
 
+@Data
 public final class Security {
     public static String hash(String password) {
         String finalPassword = null;

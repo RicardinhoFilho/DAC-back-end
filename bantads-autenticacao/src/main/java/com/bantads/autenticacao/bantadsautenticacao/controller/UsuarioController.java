@@ -1,7 +1,8 @@
 package com.bantads.autenticacao.bantadsautenticacao.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bantads.autenticacao.bantadsautenticacao.DTOs.UsuarioDTO;
-import com.bantads.autenticacao.bantadsautenticacao.DTOs.UsuarioResponseDTO;
 import com.bantads.autenticacao.bantadsautenticacao.data.UsuarioRepository;
-import com.bantads.autenticacao.bantadsautenticacao.model.TipoUsuario;
+import com.bantads.autenticacao.bantadsautenticacao.dto.UsuarioDTO;
 import com.bantads.autenticacao.bantadsautenticacao.model.Usuario;
 import com.bantads.autenticacao.bantadsautenticacao.tools.Security;
 
 @CrossOrigin
 @RestController
-@RequestMapping("usuarios")
+@RequestMapping("auth")
 public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -32,12 +31,12 @@ public class UsuarioController {
     private ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> getUsuario(@PathVariable UUID id) {
+    public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String id) {
         try {
             Optional<Usuario> usuarioOp = usuarioRepository.findById(id);
 
             if (usuarioOp.isPresent()) {
-                UsuarioResponseDTO gerente = mapper.map(usuarioOp.get(), UsuarioResponseDTO.class);
+                UsuarioDTO gerente = mapper.map(usuarioOp.get(), UsuarioDTO.class);
                 return ResponseEntity.ok(gerente);
             } else {
                 return ResponseEntity.notFound().build();
@@ -47,12 +46,23 @@ public class UsuarioController {
         }
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<List<UsuarioDTO>> getUsuarios() {
+        try {
+            List<Usuario> usuarios = usuarioRepository.findAll();
+            List<UsuarioDTO> response = Arrays.asList(mapper.map(usuarios, UsuarioDTO[].class));
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @PostMapping("/login")
-    ResponseEntity<UsuarioResponseDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
+    ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
             if (usuario != null) {
-                UsuarioResponseDTO response = mapper.map(usuario, UsuarioResponseDTO.class);
+                UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
@@ -60,25 +70,5 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
-    }
-
-    @PostMapping("/admin")
-    public ResponseEntity<String> createAdmin() {
-        try {
-            Usuario usuarioOp = usuarioRepository.findByEmail("admin");
-            if(usuarioOp != null)
-                return ResponseEntity.status(409).build();
-
-            Usuario usuario = new Usuario(UUID.randomUUID(), "admin", Security.hash("admin"), TipoUsuario.Administrador, true, UUID.randomUUID());
-            usuarioRepository.save(usuario);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    @GetMapping("/health")
-    public String getUsuarios() {
-        return "ʕ·͡ᴥ·ʔ";
     }
 }

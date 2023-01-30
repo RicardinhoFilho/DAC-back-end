@@ -1,22 +1,20 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.bantads.autenticacao.bantadsautenticacao.data;
 
-import java.util.UUID;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.bantads.autenticacao.bantadsautenticacao.model.Usuario;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
-    public Usuario findByEmail(String email);
-    public Usuario findBySaga(UUID saga);
-
-    @Query("from Usuario where email = :email and senha = :senha and ativo = true")
+/**
+ *
+ * @author leonardozanotti
+ */
+public interface UsuarioRepository extends MongoRepository<Usuario, String> {
+    @Query("{ 'email': ?0, 'senha': ?1, 'ativo': true }")
     public Usuario login(@Param("email") String email,
             @Param("senha") String senha);
-
-    @Transactional
-    public Long deleteBySaga(UUID saga);
 }
