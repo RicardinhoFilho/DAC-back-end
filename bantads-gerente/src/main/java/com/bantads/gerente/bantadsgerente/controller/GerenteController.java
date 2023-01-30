@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bantads.gerente.bantadsgerente.data.GerenteRepository;
+import com.bantads.gerente.bantadsgerente.dto.GerenteDTO;
 import com.bantads.gerente.bantadsgerente.model.Gerente;
 import com.bantads.gerente.bantadsgerente.utils.Security;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
@@ -32,23 +34,24 @@ public class GerenteController {
     private ModelMapper mapper;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Gerente>> getGerente() {
+    public ResponseEntity<List<GerenteDTO>> getGerente() {
         try {
             List<Gerente> gerentes = gerenteRepository.findAll();
-            return ResponseEntity.ok(gerentes);
+            List<GerenteDTO> response = Arrays.asList(mapper.map(gerentes, GerenteDTO[].class));
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Gerente> getGerente(@PathVariable Long id) {
+    public ResponseEntity<GerenteDTO> getGerente(@PathVariable Long id) {
         try {
             Optional<Gerente> gerenteOp = gerenteRepository.findById(id);
 
             if (gerenteOp.isPresent()) {
-                Gerente gerente = gerenteOp.get();
-                return ResponseEntity.ok(gerente);
+                GerenteDTO response = mapper.map(gerenteOp.get(), GerenteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -58,11 +61,11 @@ public class GerenteController {
     }
     
     @PostMapping("/login")
-    ResponseEntity<Gerente> login(@RequestBody Gerente gerente) {
+    ResponseEntity<GerenteDTO> login(@RequestBody GerenteDTO gerente) {
         try {
             Gerente g = gerenteRepository.login(gerente.getEmail(), Security.hash(gerente.getSenha()));
             if (g != null) {
-                Gerente response = mapper.map(g, Gerente.class);
+                GerenteDTO response = mapper.map(g, GerenteDTO.class);
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
@@ -73,12 +76,13 @@ public class GerenteController {
     }
 
     @GetMapping("/por-cpf/{cpf}")
-    public ResponseEntity<Gerente> getGerentePorCpf(@PathVariable String cpf) {
+    public ResponseEntity<GerenteDTO> getGerentePorCpf(@PathVariable String cpf) {
         try {
             Gerente gerente = gerenteRepository.findByCpf(cpf);
 
             if (gerente != null) {
-                return ResponseEntity.ok(gerente);
+                GerenteDTO response = mapper.map(gerente, GerenteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -88,12 +92,13 @@ public class GerenteController {
     }
     
     @GetMapping("/por-email/{email}")
-    public ResponseEntity<Gerente> getGerentePorEmail(@PathVariable String email) {
+    public ResponseEntity<GerenteDTO> getGerentePorEmail(@PathVariable String email) {
         try {
             Gerente gerente = gerenteRepository.findByEmail(email);
 
             if (gerente != null) {
-                return ResponseEntity.ok(gerente);
+                GerenteDTO response = mapper.map(gerente, GerenteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -103,7 +108,7 @@ public class GerenteController {
     }
 
     @PostMapping("/novo")
-    public ResponseEntity<Gerente> cadastro(@RequestBody Gerente gerente) {
+    public ResponseEntity<GerenteDTO> cadastro(@RequestBody GerenteDTO gerente) {
         try {
             if (gerenteRepository.existsByCpf(gerente.getCpf()))
                 return ResponseEntity.status(409).build();
@@ -127,7 +132,7 @@ public class GerenteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Gerente> putGerente(@PathVariable Long id, @RequestBody Gerente gerenteUp) {
+    public ResponseEntity<GerenteDTO> putGerente(@PathVariable Long id, @RequestBody GerenteDTO gerenteUp) {
         try {
             Optional<Gerente> gerenteOp = gerenteRepository.findById(id);
             if (gerenteOp.isPresent()) {
@@ -138,7 +143,8 @@ public class GerenteController {
                 gerente.setCpf(gerenteUp.getCpf());
                 gerente.setTelefone(gerenteUp.getTelefone());
                 gerente = gerenteRepository.save(gerente);
-                return ResponseEntity.ok(gerente);
+                GerenteDTO response = mapper.map(gerente, GerenteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -148,13 +154,14 @@ public class GerenteController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Gerente> deleteGerente(@PathVariable Long id) {
+    public ResponseEntity<GerenteDTO> deleteGerente(@PathVariable Long id) {
         try {
             Optional<Gerente> gerenteOp = gerenteRepository.findById(id);
             if (gerenteOp.isPresent()) {
                 Gerente gerente = mapper.map(gerenteOp, Gerente.class);
                 gerenteRepository.delete(gerente);
-                return ResponseEntity.ok(gerente);
+                GerenteDTO response = mapper.map(gerente, GerenteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }

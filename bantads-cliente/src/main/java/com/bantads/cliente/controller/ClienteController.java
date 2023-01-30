@@ -4,6 +4,7 @@
  */
 package com.bantads.cliente.controller;
 
+import com.bantads.cliente.dto.ClienteDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bantads.cliente.model.Cliente;
 import com.bantads.cliente.repository.ClienteRepository;
 import com.bantads.cliente.utils.Security;
+import java.util.Arrays;
 import org.springframework.web.bind.annotation.PutMapping;
 
 /**
@@ -39,24 +41,24 @@ public class ClienteController {
     private ModelMapper mapper;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Cliente>> getCliente() {
+    public ResponseEntity<List<ClienteDTO>> getCliente() {
         try {
             List<Cliente> clienteOp = clienteRepository.findAll();
-
-            return ResponseEntity.ok(clienteOp);
+            List<ClienteDTO> response = Arrays.asList(mapper.map(clienteOp, ClienteDTO[].class));
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
+    public ResponseEntity<ClienteDTO> getCliente(@PathVariable Long id) {
         try {
             Optional<Cliente> clienteOp = clienteRepository.findById(id);
 
             if (clienteOp.isPresent()) {
-                Cliente gerente = mapper.map(clienteOp.get(), Cliente.class);
-                return ResponseEntity.ok(gerente);
+                ClienteDTO response = mapper.map(clienteOp.get(), ClienteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -66,12 +68,13 @@ public class ClienteController {
     }
 
     @GetMapping("/por-cpf/{cpf}")
-    public ResponseEntity<Cliente> getClientePorCpf(@PathVariable String cpf) {
+    public ResponseEntity<ClienteDTO> getClientePorCpf(@PathVariable String cpf) {
         try {
             Cliente cliente = clienteRepository.findByCpf(cpf);
 
             if (cliente != null) {
-                return ResponseEntity.ok(cliente);
+                ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -81,12 +84,13 @@ public class ClienteController {
     }
     
     @GetMapping("/por-email/{email}")
-    public ResponseEntity<Cliente> getClientePorEmail(@PathVariable String email) {
+    public ResponseEntity<ClienteDTO> getClientePorEmail(@PathVariable String email) {
         try {
             Cliente cliente = clienteRepository.findByEmail(email);
 
             if (cliente != null) {
-                return ResponseEntity.ok(cliente);
+                ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
@@ -96,11 +100,11 @@ public class ClienteController {
     }
     
     @PostMapping("/login")
-    ResponseEntity<Cliente> login(@RequestBody Cliente clienteDTO) {
+    ResponseEntity<ClienteDTO> login(@RequestBody ClienteDTO clienteDTO) {
         try {
             Cliente cliente = clienteRepository.login(clienteDTO.getEmail(), Security.hash(clienteDTO.getSenha()));
             if (cliente != null) {
-                Cliente response = mapper.map(cliente, Cliente.class);
+                ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
@@ -111,7 +115,7 @@ public class ClienteController {
     }
 
     @PostMapping("/cadastro")
-    ResponseEntity<Cliente> cadastro(@RequestBody Cliente clienteDTO) {
+    ResponseEntity<ClienteDTO> cadastro(@RequestBody ClienteDTO clienteDTO) {
         try {
             if (clienteRepository.existsByCpf(clienteDTO.getCpf()))
                 return ResponseEntity.status(409).build();
@@ -131,8 +135,8 @@ public class ClienteController {
                     clienteDTO.isAtivo());
             Cliente cliente = clienteRepository.save(u);
             if (cliente != null) {
-                Cliente response = mapper.map(cliente, Cliente.class);
-                return new ResponseEntity<Cliente>(HttpStatus.CREATED);
+                ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
+                return new ResponseEntity<ClienteDTO>(HttpStatus.CREATED);
             } else {
                 return ResponseEntity.status(401).build();
             }
@@ -143,7 +147,7 @@ public class ClienteController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> putCliente(@PathVariable Long id, @RequestBody Cliente clienteUp) {
+    public ResponseEntity<ClienteDTO> putCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteUp) {
         try {
             Optional<Cliente> clienteOp = clienteRepository.findById(id);
             if (clienteOp.isPresent()) {
@@ -162,7 +166,8 @@ public class ClienteController {
                 cliente.setCargo(clienteUp.getCargo());
                 cliente.setAtivo(clienteUp.isAtivo());
                 cliente = clienteRepository.save(cliente);
-                return ResponseEntity.ok(cliente);
+                ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
             }
