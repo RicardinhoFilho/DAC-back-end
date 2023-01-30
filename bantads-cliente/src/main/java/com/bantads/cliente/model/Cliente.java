@@ -33,14 +33,14 @@ public class Cliente implements Serializable {
     private String rua;
     private int numero;
     private String complemento;    
-    private Cargo cargo;
+    private String cargo;
     private boolean ativo;
 
     public Cliente() {
         super();
     }
     
-    public Cliente(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+    public Cliente(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
         this.nome = nome;
         this.email = email;
@@ -57,7 +57,7 @@ public class Cliente implements Serializable {
         this.ativo = ativo;
     }
 
-    public Cliente(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+    public Cliente(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
         this.id = id;
         this.nome = nome;
@@ -78,7 +78,7 @@ public class Cliente implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id",unique=true, nullable = false)
+    @Column(name = "id", unique=true, nullable = false)
     public Long getId() {
         return id;
     }
@@ -187,11 +187,11 @@ public class Cliente implements Serializable {
     }
 
     @Column(name = "cargo")
-    public Cargo getCargo() {
+    public String getCargo() {
         return cargo;
     }
 
-    public void setCargo(Cargo cargo) {
+    public void setCargo(String cargo) {
         this.cargo = cargo;
     }
 

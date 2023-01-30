@@ -4,26 +4,26 @@
  */
 package com.bantads.gerente.bantadsgerente.dto;
 
-import com.bantads.gerente.bantadsgerente.model.Cargo;
+import java.io.Serializable;
 
 /**
  *
  * @author leonardozanotti
  */
-public class GerenteDTO {
+public class GerenteDTO implements Serializable {
     private Long id;
     private String nome;
     private String email;
     private String senha;
     private String cpf;
     private String telefone;
-    private Cargo cargo;
+    private String cargo;
 
     public GerenteDTO() {
         super();
     }
 
-    public GerenteDTO(String nome, String email, String senha, String cpf, String telefone, Cargo cargo) {
+    public GerenteDTO(String nome, String email, String senha, String cpf, String telefone, String cargo) {
         super();
         this.nome = nome;
         this.email = email;
@@ -33,7 +33,7 @@ public class GerenteDTO {
         this.cargo = cargo;
     }
 
-    public GerenteDTO(Long id, String nome, String email, String senha, String cpf, String telefone, Cargo cargo) {
+    public GerenteDTO(Long id, String nome, String email, String senha, String cpf, String telefone, String cargo) {
         super();
         this.id = id;
         this.nome = nome;
@@ -92,11 +92,11 @@ public class GerenteDTO {
         this.telefone = telefone;
     }
 
-    public Cargo getCargo() {
+    public String getCargo() {
         return cargo;
     }
 
-    public void setCargo(Cargo cargo) {
+    public void setCargo(String cargo) {
         this.cargo = cargo;
     }
 }

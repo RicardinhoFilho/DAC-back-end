@@ -4,13 +4,13 @@
  */
 package com.bantads.cliente.dto;
 
-import com.bantads.cliente.model.Cargo;
+import java.io.Serializable;
 
 /**
  *
  * @author leonardozanotti
  */
-public class ClienteDTO {
+public class ClienteDTO implements Serializable {
     private Long id;
     private String nome;
     private String email;
@@ -23,14 +23,14 @@ public class ClienteDTO {
     private String rua;
     private int numero;
     private String complemento;    
-    private Cargo cargo;
+    private String cargo;
     private boolean ativo;
 
     public ClienteDTO() {
         super();
     }
     
-    public ClienteDTO(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+    public ClienteDTO(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
         this.nome = nome;
         this.email = email;
@@ -47,7 +47,7 @@ public class ClienteDTO {
         this.ativo = ativo;
     }
 
-    public ClienteDTO(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, Cargo cargo, boolean ativo) {
+    public ClienteDTO(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
         this.id = id;
         this.nome = nome;
@@ -161,11 +161,11 @@ public class ClienteDTO {
         this.complemento = complemento;
     }
 
-    public Cargo getCargo() {
+    public String getCargo() {
         return cargo;
     }
 
-    public void setCargo(Cargo cargo) {
+    public void setCargo(String cargo) {
         this.cargo = cargo;
     }
 

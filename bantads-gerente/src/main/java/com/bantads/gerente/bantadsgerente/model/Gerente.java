@@ -19,13 +19,13 @@ public class Gerente implements Serializable {
     private String senha;
     private String cpf;
     private String telefone;
-    private Cargo cargo;
+    private String cargo;
 
     public Gerente() {
         super();
     }
 
-    public Gerente(String nome, String email, String senha, String cpf, String telefone, Cargo cargo) {
+    public Gerente(String nome, String email, String senha, String cpf, String telefone, String cargo) {
         super();
         this.nome = nome;
         this.email = email;
@@ -35,7 +35,7 @@ public class Gerente implements Serializable {
         this.cargo = cargo;
     }
 
-    public Gerente(Long id, String nome, String email, String senha, String cpf, String telefone, Cargo cargo) {
+    public Gerente(Long id, String nome, String email, String senha, String cpf, String telefone, String cargo) {
         super();
         this.id = id;
         this.nome = nome;
@@ -104,11 +104,11 @@ public class Gerente implements Serializable {
     }
 
     @Column(name = "cargo")
-    public Cargo getCargo() {
+    public String getCargo() {
         return cargo;
     }
 
-    public void setCargo(Cargo cargo) {
+    public void setCargo(String cargo) {
         this.cargo = cargo;
     }
 }

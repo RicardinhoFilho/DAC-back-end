@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(cors());
 
 // Proxy
-const loginServiceProxy = httpProxy(process.env.HOST_ORQUESTRADOR, {
+const loginServiceProxy = httpProxy(process.env.HOST_AUTENTICACAO, {
   proxyReqBodyDecorator: function (bodyContent, srcReq) {
     try {
       const { login, senha } = bodyContent;
@@ -56,7 +56,7 @@ const loginServiceProxy = httpProxy(process.env.HOST_ORQUESTRADOR, {
   },
 });
 
-// auxiliar functions
+// Auxiliar functions
 function verifyJWT(req, res, next) {
   const token = req.headers['x-access-token'];
   if (!token) return res.status(401).json({ auth: false, message: 'Token não fornecido.' });
@@ -68,13 +68,51 @@ function verifyJWT(req, res, next) {
   });
 }
 
-// ORQUESTRADOR
-app.post(process.env.PATH_ORQUESTRADOR + '/login', (req, res, next) => {
+// AUTENTICACAO
+app.post(process.env.PATH_AUTENTICACAO + '/login', (req, res, next) => {
   loginServiceProxy(req, res, next);
 });
 
-app.post(process.env.PATH_ORQUESTRADOR + '/logout', verifyJWT, (req, res) => {
+app.post(process.env.PATH_AUTENTICACAO + '/logout', verifyJWT, (req, res) => {
   res.json({ auth: false, token: null });
+});
+
+app.get(process.env.PATH_AUTENTICACAO + '/list', verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_AUTENTICACAO, {
+    proxyReqBodyDecorator: function (bodyContent, srcReq) {
+      return bodyContent;
+    },
+    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers['Content-Type'] = 'application/json';
+      return proxyReqOpts;
+    },
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      if (proxyRes.statusCode === 200) {
+        const str = Buffer.from(proxyResData).toString('utf-8');
+        const objBody = JSON.parse(str);
+        userRes.status(200);
+        return { usuarios: objBody };
+      } else {
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar usuários.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_AUTENTICACAO, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o usuário.' };
+      }
+    },
+  })(req, res, next);
 });
 
 // CLIENTE
@@ -92,7 +130,7 @@ app.post(process.env.PATH_CLIENTE + '/cadastro', async (req, res, next) => {
   })(req, res, next);
 });
 
-app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
+app.put(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CLIENTE, {
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 200) {
@@ -101,20 +139,19 @@ app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
         return str;
       } else {
         userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao buscar o cliente.' };
+        return { message: 'Um erro ocorreu ao alterar o cliente.' };
       }
     },
   })(req, res, next);
 });
 
-app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res) => {
+app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CLIENTE, {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
     },
     proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
       proxyReqOpts.headers['Content-Type'] = 'application/json';
-      proxyReqOpts.method = 'POST';
       return proxyReqOpts;
     },
     userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
@@ -126,21 +163,6 @@ app.get(process.env.PATH_CLIENTE + '/list', verifyJWT, async (req, res) => {
       } else {
         userRes.status(401);
         return { message: 'Um erro ocorreu ao buscar clientes.' };
-      }
-    },
-  })(req, res, next);
-});
-
-app.put(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CLIENTE, {
-    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
-        var str = Buffer.from(proxyResData).toString('utf-8');
-        userRes.status(200);
-        return str;
-      } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao alterar o cliente.' };
       }
     },
   })(req, res, next);
@@ -162,6 +184,21 @@ app.get(`${process.env.PATH_CLIENTE}/por-cpf/:cpf`, verifyJWT, (req, res, next) 
 });
 
 app.get(`${process.env.PATH_CLIENTE}/por-email/:email`, verifyJWT, (req, res, next) => {
+  httpProxy(process.env.HOST_CLIENTE, {
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
+        userRes.status(200);
+        return str;
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o cliente.' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(`${process.env.PATH_CLIENTE}/:id`, verifyJWT, (req, res, next) => {
   httpProxy(process.env.HOST_CLIENTE, {
     userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 200) {
@@ -220,16 +257,24 @@ app.delete(`${process.env.PATH_GERENTE}/:id`, verifyJWT, async (req, res, next) 
   })(req, res, next);
 });
 
-app.get(`${process.env.PATH_GERENTE}/:id`, verifyJWT, (req, res, next) => {
+app.get(process.env.PATH_GERENTE + '/list', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
-    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 200) {
-        var str = Buffer.from(proxyResData).toString('utf-8');
+    proxyReqBodyDecorator: function (bodyContent, srcReq) {
+      return bodyContent;
+    },
+    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers['Content-Type'] = 'application/json';
+      return proxyReqOpts;
+    },
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      if (proxyRes.statusCode === 200) {
+        const str = Buffer.from(proxyResData).toString('utf-8');
+        const objBody = JSON.parse(str);
         userRes.status(200);
-        return str;
+        return { gerentes: objBody };
       } else {
-        userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu ao buscar o gerente.' };
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar gerentes.' };
       }
     },
   })(req, res, next);
@@ -265,25 +310,16 @@ app.get(`${process.env.PATH_GERENTE}/por-email/:email`, verifyJWT, (req, res, ne
   })(req, res, next);
 });
 
-app.get(process.env.PATH_GERENTE + '/list', verifyJWT, async (req, res) => {
+app.get(`${process.env.PATH_GERENTE}/:id`, verifyJWT, (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
-    proxyReqBodyDecorator: function (bodyContent, srcReq) {
-      return bodyContent;
-    },
-    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
-      proxyReqOpts.headers['Content-Type'] = 'application/json';
-      proxyReqOpts.method = 'POST';
-      return proxyReqOpts;
-    },
-    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
-      if (proxyRes.statusCode === 200) {
-        const str = Buffer.from(proxyResData).toString('utf-8');
-        const objBody = JSON.parse(str);
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
         userRes.status(200);
-        return { clientes: objBody };
+        return str;
       } else {
-        userRes.status(401);
-        return { message: 'Um erro ocorreu ao buscar gerentes.' };
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar o gerente.' };
       }
     },
   })(req, res, next);

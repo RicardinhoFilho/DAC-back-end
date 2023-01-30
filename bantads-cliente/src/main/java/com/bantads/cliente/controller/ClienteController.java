@@ -98,21 +98,6 @@ public class ClienteController {
             return ResponseEntity.status(500).build();
         }
     }
-    
-    @PostMapping("/login")
-    ResponseEntity<ClienteDTO> login(@RequestBody ClienteDTO clienteDTO) {
-        try {
-            Cliente cliente = clienteRepository.login(clienteDTO.getEmail(), Security.hash(clienteDTO.getSenha()));
-            if (cliente != null) {
-                ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
-                return ResponseEntity.ok().body(response);
-            } else {
-                return ResponseEntity.status(401).build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
 
     @PostMapping("/cadastro")
     ResponseEntity<ClienteDTO> cadastro(@RequestBody ClienteDTO clienteDTO) {

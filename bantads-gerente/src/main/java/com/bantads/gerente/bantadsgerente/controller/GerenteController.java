@@ -59,21 +59,6 @@ public class GerenteController {
             return ResponseEntity.status(500).build();
         }
     }
-    
-    @PostMapping("/login")
-    ResponseEntity<GerenteDTO> login(@RequestBody GerenteDTO gerente) {
-        try {
-            Gerente g = gerenteRepository.login(gerente.getEmail(), Security.hash(gerente.getSenha()));
-            if (g != null) {
-                GerenteDTO response = mapper.map(g, GerenteDTO.class);
-                return ResponseEntity.ok().body(response);
-            } else {
-                return ResponseEntity.status(401).build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
 
     @GetMapping("/por-cpf/{cpf}")
     public ResponseEntity<GerenteDTO> getGerentePorCpf(@PathVariable String cpf) {
