@@ -18,9 +18,4 @@ public class ClienteApplication {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
-
-	@Bean
-	public ObjectMapper objectMapper() {
-		return new ObjectMapper();
-	}
 }
