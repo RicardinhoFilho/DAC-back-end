@@ -1,11 +1,10 @@
 package com.bantads.cliente;
 
+import com.bantads.cliente.services.email.MailSenderService;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
 public class ClienteApplication {
@@ -17,5 +16,10 @@ public class ClienteApplication {
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
+	}
+        
+        @Bean
+	public MailSenderService mailService() {
+		return new MailSenderService();
 	}
 }

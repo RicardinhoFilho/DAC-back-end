@@ -4,7 +4,7 @@
  */
 package com.bantads.cliente.controller;
 
-import com.bantads.cliente.dto.ClienteDTO;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,15 +16,16 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bantads.cliente.dto.ClienteDTO;
 import com.bantads.cliente.model.Cliente;
 import com.bantads.cliente.repository.ClienteRepository;
+import com.bantads.cliente.services.email.MailSenderService;
 import com.bantads.cliente.utils.Security;
-import java.util.Arrays;
-import org.springframework.web.bind.annotation.PutMapping;
 
 /**
  *
@@ -39,6 +40,9 @@ public class ClienteController {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private MailSenderService mailService;
 
     @GetMapping("/list")
     public ResponseEntity<List<ClienteDTO>> getCliente() {
@@ -82,7 +86,7 @@ public class ClienteController {
             return ResponseEntity.status(500).build();
         }
     }
-    
+
     @GetMapping("/por-email/{email}")
     public ResponseEntity<ClienteDTO> getClientePorEmail(@PathVariable String email) {
         try {
@@ -102,8 +106,11 @@ public class ClienteController {
     @PostMapping("/cadastro")
     ResponseEntity<ClienteDTO> cadastro(@RequestBody ClienteDTO clienteDTO) {
         try {
-            if (clienteRepository.existsByCpf(clienteDTO.getCpf()))
+            if (clienteRepository.existsByCpf(clienteDTO.getCpf())) {
+                mailService.sendMail(clienteDTO.getEmail(), "BANTADS - Falha na criação da conta!",
+                        "Uma falha ocorreu ao criar sua conta: CPF já está sendo utilizado!");
                 return ResponseEntity.status(409).build();
+            }
             Cliente u = new Cliente(
                     clienteDTO.getNome(),
                     clienteDTO.getEmail(),
@@ -121,16 +128,21 @@ public class ClienteController {
             Cliente cliente = clienteRepository.save(u);
             if (cliente != null) {
                 ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
+                mailService.sendMail(clienteDTO.getEmail(), "BANTADS - Conta criada!",
+                        "Sua conta foi criada!\nAgora é só esperar a aprovação por um de nossos gerentes.");
                 return new ResponseEntity<ClienteDTO>(HttpStatus.CREATED);
             } else {
+                mailService.sendMail(clienteDTO.getEmail(), "BANTADS - Falha na criação da conta!",
+                        "Uma falha ocorreu ao criar sua conta, por favor, tente novamente mais tarde!");
                 return ResponseEntity.status(401).build();
             }
         } catch (Exception e) {
-            System.out.println(e);
+            mailService.sendMail(clienteDTO.getEmail(), "BANTADS - Falha na criação da conta!",
+                    "Uma falha ocorreu ao criar sua conta, por favor, tente novamente mais tarde!");
             return ResponseEntity.status(500).build();
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity<ClienteDTO> putCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteUp) {
         try {
