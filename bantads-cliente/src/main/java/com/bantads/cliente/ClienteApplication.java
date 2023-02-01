@@ -1,6 +1,7 @@
 package com.bantads.cliente;
 
 import com.bantads.cliente.services.email.MailSenderService;
+import com.bantads.cliente.utils.Security;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 public class ClienteApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ClienteApplication.class, args);
+            SpringApplication.run(ClienteApplication.class, args);
 	}
 
 	@Bean

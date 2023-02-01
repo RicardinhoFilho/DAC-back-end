@@ -114,7 +114,7 @@ public class ClienteController {
             Cliente u = new Cliente(
                     clienteDTO.getNome(),
                     clienteDTO.getEmail(),
-                    Security.hash(clienteDTO.getSenha()),
+                    Security.generateStrongPassword(),
                     clienteDTO.getCpf(),
                     clienteDTO.getTelefone(),
                     clienteDTO.getEstado(),
@@ -129,7 +129,7 @@ public class ClienteController {
             if (cliente != null) {
                 ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
                 mailService.sendMail(clienteDTO.getEmail(), "BANTADS - Conta criada!",
-                        "Sua conta foi criada!\nAgora é só esperar a aprovação por um de nossos gerentes.");
+                        "Sua conta foi criada com a senha:" + cliente.getSenha() + "\nAgora é só esperar a aprovação por um de nossos gerentes!");
                 return new ResponseEntity<ClienteDTO>(HttpStatus.CREATED);
             } else {
                 mailService.sendMail(clienteDTO.getEmail(), "BANTADS - Falha na criação da conta!",

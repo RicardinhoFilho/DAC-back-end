@@ -40,4 +40,16 @@ public final class Security {
         }
         return sb.toString();
     }
+    
+    public static String generateStrongPassword() {
+        String password = "";
+        String possibleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        String possibleNumbers = "0123456789";
+        String possibleSymbols = "!@#$%";
+        String possible = possibleChars + possibleNumbers + possibleSymbols;
+        for (int i = 0; i < 13; i++) {
+            password += possible.charAt((int) Math.floor(Math.random() * possible.length()));
+        }
+        return password;
+    }
 }
