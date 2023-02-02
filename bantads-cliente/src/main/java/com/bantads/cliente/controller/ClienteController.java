@@ -164,6 +164,11 @@ public class ClienteController {
                 cliente.setAtivo(clienteUp.isAtivo());
                 cliente = clienteRepository.save(cliente);
                 ClienteDTO response = mapper.map(cliente, ClienteDTO.class);
+                
+                if (!clienteOp.get().isAtivo() && clienteUp.isAtivo())
+                    mailService.sendMail(cliente.getEmail(), "BANTADS - Conta aprovada!",
+                        "Sua conta foi aprovada!\nVocê já pode entrar no BANTDS usando seu email e senha!");
+                
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.notFound().build();
