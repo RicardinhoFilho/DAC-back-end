@@ -1,8 +1,7 @@
-package com.bantads.conta.repository;
+package com.bantads.conta.bantadsconta.data;
 
+import com.bantads.conta.bantadsconta.model.Transacao;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.bantads.conta.model.Transacao;
 
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 	//List<Transacao> findByDataHoraBetween(Date startDate, Date endDate);

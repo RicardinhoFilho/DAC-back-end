@@ -1,10 +1,10 @@
-package com.bantads.conta;
+package com.bantads.conta.bantadsconta;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ContaApplicationTests {
+class BantadscontaApplicationTests {
 
 	@Test
 	void contextLoads() {

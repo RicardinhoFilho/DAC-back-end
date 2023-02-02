@@ -1,39 +1,22 @@
-package com.bantads.conta.model;
+package com.bantads.conta.bantadsconta.DTO;
 
 import java.io.Serializable;
 import java.sql.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="transacao")
-public class Transacao implements Serializable {
-	
-	@Id
-	//@GeneratedValue
-	@Column(name="id_transacao")
+public class TransacaoDTO implements Serializable {
 	private int id;
-	@Column(name="id_cliente")
 	private int idCliente;
-	@Column(name="tipo_transacao")
 	private int tipoTransacao;
-	@Column(name="valor_transacao")
 	private double valorTransacao;
-	@Column(name="saldo")
 	private double saldo;
-	@Column(name="data_transacao")
 	private Date data;
-	@Column(name="destinatario")
 	private int destinatario;
 	
-	public Transacao() {
+	public TransacaoDTO() {
 		super();
 	}
 	
-	public Transacao(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
+	public TransacaoDTO(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
 			Date data, int destinatario) {
 		super();
 		this.id = id;

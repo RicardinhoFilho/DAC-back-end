@@ -1,42 +1,24 @@
-package com.bantads.conta.model;
+package com.bantads.conta.bantadsconta.DTO;
 
 import java.io.Serializable;
 import java.sql.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "conta")
-public class Conta implements Serializable {
-	@Id
-	// @GeneratedValue
-	@Column(name = "id_conta")
-	private int id;
-	@Column(name = "id_usuario")
-	private int idUsuario;
-	@Column(name = "data")
+public class ContaDTO implements Serializable {
+	private Long id;
+	private Long idUsuario;
 	private Date data;
-	@Column(name = "ativo")
 	private boolean ativo;
-	@Column(name = "saldo")
 	private double saldo;
-	@Column(name = "id_gerente")
-	private int idGerente;
-	@Column(name = "salario")
+	private Long idGerente;
 	private double salario;
-	@Column(name = "rejeitado_motivo")
 	private String rejeitadoMotivo;
-	@Column(name = "rejeitado_data")
 	private Date rejeitadoData;
 
-	public Conta() {
+	public ContaDTO() {
 		super();
 	}
 
-	public Conta(int id, int idUsuario, Date data, boolean ativo, double saldo, int idGerente, double salario,
+	public ContaDTO(Long id, Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
 			String rejeitadoMotivo, Date rejeitadoData) {
 		super();
 		this.id = id;
@@ -50,19 +32,19 @@ public class Conta implements Serializable {
 		this.rejeitadoData = rejeitadoData;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public int getIdUsuario() {
+	public Long getIdUsuario() {
 		return idUsuario;
 	}
 
-	public void setIdUsuario(int idUsuario) {
+	public void setIdUsuario(Long idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 
@@ -90,11 +72,11 @@ public class Conta implements Serializable {
 		this.saldo = saldo;
 	}
 
-	public int getIdGerente() {
+	public Long getIdGerente() {
 		return idGerente;
 	}
 
-	public void setIdGerente(int idGerente) {
+	public void setIdGerente(Long idGerente) {
 		this.idGerente = idGerente;
 	}
 

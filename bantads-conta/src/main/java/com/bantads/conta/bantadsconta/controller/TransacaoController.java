@@ -1,7 +1,10 @@
-package com.bantads.conta.controller;
+package com.bantads.conta.bantadsconta.controller;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import com.bantads.conta.bantadsconta.DTO.TransacaoDTO;
+import com.bantads.conta.bantadsconta.model.Transacao;
+import com.bantads.conta.bantadsconta.data.ContaRepository;
+import com.bantads.conta.bantadsconta.data.TransacaoRepository;
+import com.bantads.conta.bantadsconta.model.Conta;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,31 +14,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.bantads.conta.DTO.TransacaoDTO;
-import com.bantads.conta.model.Conta;
-import com.bantads.conta.model.Transacao;
-import com.bantads.conta.repository.ContaRepository;
-import com.bantads.conta.repository.TransacaoRepository;
 
 @CrossOrigin
 @RestController
 public class TransacaoController {
 	@Autowired
 	private TransacaoRepository repositorio;
+        
 	@Autowired
 	private ContaRepository repositorioConta;
+        
 	@Autowired
 	private ModelMapper mapper;
 	
 	@GetMapping("/transacaos")
 	public ResponseEntity<List<TransacaoDTO>> obterTodasTransacaos() {
 		try {
-			List<Transacao> lista =repositorio.findAll();
+			List<Transacao> lista = repositorio.findAll();
 			List<TransacaoDTO> response = lista.stream()
 					.map(item -> mapper.map(item, 
 							TransacaoDTO.class)).
