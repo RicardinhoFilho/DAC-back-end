@@ -268,22 +268,14 @@ app.get(process.env.PATH_CONTA + '/list', verifyJWT, async (req, res, next) => {
 
 app.get(`${process.env.PATH_CONTA}/por-usuario/:userId`, verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CONTA, {
-    proxyReqBodyDecorator: function (bodyContent, srcReq) {
-      return bodyContent;
-    },
-    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
-      proxyReqOpts.headers['Content-Type'] = 'application/json';
-      return proxyReqOpts;
-    },
-    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
-      if (proxyRes.statusCode === 200) {
-        const str = Buffer.from(proxyResData).toString('utf-8');
-        const objBody = JSON.parse(str);
+    userResDecorator: function (proxyRes, proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 200) {
+        var str = Buffer.from(proxyResData).toString('utf-8');
         userRes.status(200);
-        return { clientes: objBody };
+        return str;
       } else {
-        userRes.status(401);
-        return { message: 'Um erro ocorreu ao buscar contas por usuário.' };
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao buscar a conta do usuário.' };
       }
     },
   })(req, res, next);
