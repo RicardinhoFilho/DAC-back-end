@@ -2,8 +2,15 @@ package com.bantads.conta.bantadsconta.controller;
 
 import com.bantads.conta.bantadsconta.DTO.TransacaoDTO;
 import com.bantads.conta.bantadsconta.model.Transacao;
+import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
+import com.bantads.conta.bantadsconta.model.CUD.TransacaoCUD;
+import com.bantads.conta.bantadsconta.model.R.TransacaoR;
+import com.bantads.conta.bantadsconta.services.EmissorTransacao;
 import com.bantads.conta.bantadsconta.data.ContaRepository;
 import com.bantads.conta.bantadsconta.data.TransacaoRepository;
+import com.bantads.conta.bantadsconta.data.CUD.ContaCUDRepository;
+import com.bantads.conta.bantadsconta.data.CUD.TransacaoCUDRepository;
+import com.bantads.conta.bantadsconta.data.R.TransacaoRRepository;
 import com.bantads.conta.bantadsconta.model.Conta;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +29,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TransacaoController {
 	@Autowired
-	private TransacaoRepository repositorio;
+	private EmissorTransacao emitirTransacao;
+	
+	@Autowired
+	private TransacaoRRepository transacaoRRepository;
+	
+	@Autowired
+	private TransacaoCUDRepository transacaoCUDRepository;
         
 	@Autowired
-	private ContaRepository repositorioConta;
+	private ContaCUDRepository contaCUDRepository;
         
 	@Autowired
 	private ModelMapper mapper;
@@ -33,7 +46,7 @@ public class TransacaoController {
 	@GetMapping("/transacaos")
 	public ResponseEntity<List<TransacaoDTO>> obterTodasTransacaos() {
 		try {
-			List<Transacao> lista = repositorio.findAll();
+			List<TransacaoR> lista = transacaoRRepository.findAll();
 			List<TransacaoDTO> response = lista.stream()
 					.map(item -> mapper.map(item, 
 							TransacaoDTO.class)).
@@ -50,43 +63,54 @@ public class TransacaoController {
 	@PostMapping("/transacao")
 	public ResponseEntity<TransacaoDTO> inserirUsuario(@RequestBody TransacaoDTO transacao) {
 		
-		Optional<Conta> contaOrigem = repositorioConta.findById((long) transacao.getIdCliente());
-		Conta origem = contaOrigem.get();
-		Optional<Conta> contaDestinatario = null;
-		Conta destinatario = null;
-		
-		if(!contaOrigem.isPresent())
+		try {
+			TransacaoCUD transacaoCUD = new TransacaoCUD(transacao);
+			
+			Optional<ContaCUD> contaOrigem = contaCUDRepository.findById((long) transacao.getIdCliente());
+			ContaCUD origem = contaOrigem.get();
+			Optional<ContaCUD> contaDestinatario = null;
+			ContaCUD destinatario = null;
+			
+			if(!contaOrigem.isPresent())
+				return ResponseEntity.status(500).build();
+			
+			if(transacao.getDestinatario() != 0) {
+				contaDestinatario = contaCUDRepository.findById((long) transacao.getDestinatario());
+				destinatario  = contaDestinatario.get();
+			}
+			
+			transacaoCUDRepository.save(transacaoCUD);
+			
+			switch (transacao.getTipoTransacao()) {
+			case 1: //deposito
+				origem.setSaldo(transacao.getSaldo());
+				contaCUDRepository.save(origem);
+				break;
+				
+			case 2: //saque
+				origem.setSaldo(transacao.getSaldo());
+				contaCUDRepository.save(origem);
+				break;
+				
+			case 3: //transferencia
+				origem.setSaldo(transacao.getSaldo());
+				contaCUDRepository.save(origem);
+				destinatario.setSaldo(destinatario.getSaldo() + transacao.getValorTransacao());
+				contaCUDRepository.save(destinatario);
+				break;
+				
+			default:
+				return ResponseEntity.status(500).build();
+			}
+			
+			// MANDA PRA FILA PARA ATUALIZAR OS DOIS BANCOS
+			emitirTransacao.enviarInserirBancoLeitura(transacao);
+			
+			return ResponseEntity.ok().body(transacao);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 			return ResponseEntity.status(500).build();
-		
-		if(transacao.getDestinatario() != 0) {
-			contaDestinatario = repositorioConta.findById((long) transacao.getDestinatario());
-			destinatario  = contaDestinatario.get();
 		}
 		
-		repositorio.save(mapper.map(transacao, Transacao.class));
-		
-		switch (transacao.getTipoTransacao()) {
-		case 1: //deposito
-			origem.setSaldo(transacao.getSaldo());
-			repositorioConta.save(origem);
-			break;
-			
-		case 2: //saque
-			origem.setSaldo(transacao.getSaldo());
-			repositorioConta.save(origem);
-			break;
-			
-		case 3: //transferencia
-			origem.setSaldo(transacao.getSaldo());
-			repositorioConta.save(origem);
-			destinatario.setSaldo(destinatario.getSaldo() + transacao.getValorTransacao());
-			repositorioConta.save(destinatario);
-			break;
-			
-		default:
-			return ResponseEntity.status(500).build();
-		}
-		
-	return ResponseEntity.ok().body(transacao);
 	}
 }

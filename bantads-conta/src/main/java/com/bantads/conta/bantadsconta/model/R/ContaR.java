@@ -1,6 +1,5 @@
-package com.bantads.conta.bantadsconta.model;
+package com.bantads.conta.bantadsconta.model.R;
 
-import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -12,8 +11,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "conta")
-public class Conta implements Serializable {
-    private Long id;
+public class ContaR {
+	private Long id;
 	private Long idUsuario;
 	private Date data;
 	private boolean ativo;
@@ -23,11 +22,11 @@ public class Conta implements Serializable {
 	private String rejeitadoMotivo;
 	private Date rejeitadoData;
 
-	public Conta() {
+	public ContaR() {
 		super();
 	}
         
-        public Conta(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
+        public ContaR(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
 			String rejeitadoMotivo, Date rejeitadoData) {
 		super();
 		this.idUsuario = idUsuario;
@@ -40,7 +39,7 @@ public class Conta implements Serializable {
 		this.rejeitadoData = rejeitadoData;
 	}
 
-	public Conta(Long id, Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
+	public ContaR(Long id, Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
 			String rejeitadoMotivo, Date rejeitadoData) {
 		super();
 		this.id = id;
@@ -54,7 +53,7 @@ public class Conta implements Serializable {
 		this.rejeitadoData = rejeitadoData;
 	}
 
-        public Conta(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario) {
+        public ContaR(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario) {
                     super();
                     this.idUsuario = idUsuario;
                     this.data = data;
@@ -146,5 +145,4 @@ public class Conta implements Serializable {
 	public void setRejeitadoData(Date rejeitadoData) {
 		this.rejeitadoData = rejeitadoData;
 	}
-
 }

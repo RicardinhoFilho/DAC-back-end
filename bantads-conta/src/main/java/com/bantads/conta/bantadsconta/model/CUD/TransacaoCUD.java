@@ -1,9 +1,19 @@
-package com.bantads.conta.bantadsconta.DTO;
+package com.bantads.conta.bantadsconta.model.CUD;
 
-import java.io.Serializable;
 import java.sql.Date;
 
-public class TransacaoDTO implements Serializable {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.bantads.conta.bantadsconta.DTO.TransacaoDTO;
+
+@Entity
+@Table(name="transacao")
+public class TransacaoCUD {
 	private Long id;
 	private Long idCliente;
 	private int tipoTransacao;
@@ -12,11 +22,11 @@ public class TransacaoDTO implements Serializable {
 	private Date data;
 	private Long destinatario;
 	
-	public TransacaoDTO() {
+	public TransacaoCUD() {
 		super();
 	}
 	
-	public TransacaoDTO(Long id, Long idCliente, int tipoTransacao, double valorTransacao, double saldo,
+	public TransacaoCUD(Long id, Long idCliente, int tipoTransacao, double valorTransacao, double saldo,
 			Date data, Long destinatario) {
 		super();
 		this.id = id;
@@ -28,6 +38,18 @@ public class TransacaoDTO implements Serializable {
 		this.destinatario = destinatario;
 	}
 
+	public TransacaoCUD(TransacaoDTO transacao) {
+    	this.id = transacao.getId();
+    	this.data = transacao.getData();
+    	this.idCliente = transacao.getIdCliente();
+    	this.tipoTransacao = transacao.getTipoTransacao();
+    	this.valorTransacao = transacao.getValorTransacao();
+    	//this.saga = UUID.randomUUID();
+    }
+	
+        @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id_transacao")
 	public Long getId() {
 		return id;
 	}
@@ -36,6 +58,7 @@ public class TransacaoDTO implements Serializable {
 		this.id = id;
 	}
 
+	@Column(name="id_cliente")
 	public Long getIdCliente() {
 		return idCliente;
 	}
@@ -44,6 +67,7 @@ public class TransacaoDTO implements Serializable {
 		this.idCliente = idCliente;
 	}
 
+	@Column(name="tipo_transacao")
 	public int getTipoTransacao() {
 		return tipoTransacao;
 	}
@@ -52,6 +76,7 @@ public class TransacaoDTO implements Serializable {
 		this.tipoTransacao = tipoTransacao;
 	}
 
+	@Column(name="valor_transacao")
 	public double getValorTransacao() {
 		return valorTransacao;
 	}
@@ -60,6 +85,7 @@ public class TransacaoDTO implements Serializable {
 		this.valorTransacao = valorTransacao;
 	}
 
+	@Column(name="saldo")
 	public double getSaldo() {
 		return saldo;
 	}
@@ -68,6 +94,7 @@ public class TransacaoDTO implements Serializable {
 		this.saldo = saldo;
 	}
 
+	@Column(name="data_transacao")
 	public Date getData() {
 		return data;
 	}
@@ -76,6 +103,7 @@ public class TransacaoDTO implements Serializable {
 		this.data = data;
 	}
 	
+	@Column(name="destinatario")
 	public Long getDestinatario() {
 		return destinatario;
 	}

@@ -1,6 +1,5 @@
-package com.bantads.conta.bantadsconta.model;
+package com.bantads.conta.bantadsconta.model.CUD;
 
-import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -10,10 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.bantads.conta.bantadsconta.DTO.ContaDTO;
+
 @Entity
 @Table(name = "conta")
-public class Conta implements Serializable {
-    private Long id;
+public class ContaCUD {
+	private Long id;
 	private Long idUsuario;
 	private Date data;
 	private boolean ativo;
@@ -23,11 +24,11 @@ public class Conta implements Serializable {
 	private String rejeitadoMotivo;
 	private Date rejeitadoData;
 
-	public Conta() {
+	public ContaCUD() {
 		super();
 	}
         
-        public Conta(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
+        public ContaCUD(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
 			String rejeitadoMotivo, Date rejeitadoData) {
 		super();
 		this.idUsuario = idUsuario;
@@ -40,7 +41,7 @@ public class Conta implements Serializable {
 		this.rejeitadoData = rejeitadoData;
 	}
 
-	public Conta(Long id, Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
+	public ContaCUD(Long id, Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario,
 			String rejeitadoMotivo, Date rejeitadoData) {
 		super();
 		this.id = id;
@@ -54,14 +55,25 @@ public class Conta implements Serializable {
 		this.rejeitadoData = rejeitadoData;
 	}
 
-        public Conta(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario) {
-                    super();
-                    this.idUsuario = idUsuario;
-                    this.data = data;
-                    this.ativo = ativo;
-                    this.saldo = saldo;
-                    this.idGerente = idGerente;
-                    this.salario = salario;
+        public ContaCUD(Long idUsuario, Date data, boolean ativo, double saldo, Long idGerente, double salario) {
+            super();
+            this.idUsuario = idUsuario;
+            this.data = data;
+            this.ativo = ativo;
+            this.saldo = saldo;
+            this.idGerente = idGerente;
+            this.salario = salario;
+        }
+        
+        public ContaCUD(ContaDTO conta) {
+        	super();
+        	this.id = conta.getId();
+        	this.idGerente = conta.getIdGerente();
+        	this.idUsuario = conta.getIdUsuario();
+        	this.data = conta.getData();
+        	this.saldo = conta.getSaldo();
+        	this.salario = conta.getSalario();
+        	//this.saga = conta.getSaga();
         }
 
         @Id
@@ -146,5 +158,4 @@ public class Conta implements Serializable {
 	public void setRejeitadoData(Date rejeitadoData) {
 		this.rejeitadoData = rejeitadoData;
 	}
-
 }
