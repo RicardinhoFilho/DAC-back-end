@@ -5,6 +5,9 @@
 package com.bantads.cliente.services.rabbitmq;
 
 import com.bantads.cliente.dto.ClienteDTO;
+import com.bantads.cliente.model.Cliente;
+import com.bantads.cliente.repository.ClienteRepository;
+import com.bantads.cliente.utils.Security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,12 +22,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Component
 public class RabbitMQConsumer {
     public static final String FILA_REGISTRO_CLIENTE = "FILA_REGISTRO_CLIENTE";
-     @Autowired
-     private ObjectMapper objectMapper;
-    
-     @RabbitListener(queues=FILA_REGISTRO_CLIENTE)
-     public void receiveMessage(String msg) throws JsonMappingException, JsonProcessingException {
-         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
-         System.out.println("RECEBIDA ("+ cliente.getNome() + ") "+ msg);
-     }
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @RabbitListener(queues = FILA_REGISTRO_CLIENTE)
+    public void registraNovoCliente(String msg) throws JsonMappingException, JsonProcessingException {
+        var cliente = objectMapper.readValue(msg, ClienteDTO.class);
+       
+        Cliente u = new Cliente(
+            cliente.getNome(),
+            cliente.getEmail(),
+                Security.generateStrongPassword(),
+                cliente.getCpf(),
+                cliente.getTelefone(),
+                cliente.getEstado(),
+                cliente.getCidade(),
+                cliente.getCep(),
+                cliente.getRua(),
+                cliente.getNumero(),
+                cliente.getComplemento(),
+                cliente.getCargo(),
+                cliente.isAtivo());
+
+        clienteRepository.save(u);
+        System.out.println("Salvo (" + u.getNome() + ") " + msg);
+    }
 }
