@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bantads.orquestrador.bantadsorquestrador.constantes.RabbitmqConstantes;
 import com.bantads.orquestrador.bantadsorquestrador.dto.ClienteDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,11 +33,16 @@ public class OrquestradorController {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @PostMapping("/producer")
-    ResponseEntity<?> enfileirarPessoa(@RequestBody ClienteDTO clienteDto) throws JsonProcessingException {
+   
+    @PostMapping("/cliente")
+    ResponseEntity<?> enfileirarCliente(@RequestBody ClienteDTO clienteDto) throws JsonProcessingException {
         var json = objectMapper.writeValueAsString(clienteDto);
-        rabbitTemplate.convertAndSend("ufpr.teste", json);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CLIENTE, json);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_AUTENTICACAO_CLIENTE, json);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CONTA_CLIENTE, json);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_GERENTE_CLIENTE, json);
         return new ResponseEntity<>("Enfileirado: " + json, HttpStatus.OK);
     }
+
+   
 }
