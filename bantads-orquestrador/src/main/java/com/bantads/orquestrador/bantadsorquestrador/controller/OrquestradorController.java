@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bantads.orquestrador.bantadsorquestrador.constantes.RabbitmqConstantes;
 import com.bantads.orquestrador.bantadsorquestrador.dto.ClienteDTO;
+import com.bantads.orquestrador.bantadsorquestrador.dto.ValidaReponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,12 +37,18 @@ public class OrquestradorController {
    
     @PostMapping("/cliente")
     ResponseEntity<?> enfileirarCliente(@RequestBody ClienteDTO clienteDto) throws JsonProcessingException {
-        var json = objectMapper.writeValueAsString(clienteDto);
-        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CLIENTE, json);
-        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_AUTENTICACAO_CLIENTE, json);
-        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CONTA_CLIENTE, json);
-        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_GERENTE_CLIENTE, json);
-        return new ResponseEntity<>("Enfileirado: " + json, HttpStatus.OK);
+        ValidaReponse verificacao = clienteDto.ValidaCliente();
+        if(verificacao.getStatus() == true){
+            var json = objectMapper.writeValueAsString(clienteDto);
+            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CLIENTE, json);
+            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_AUTENTICACAO_CLIENTE, json);
+            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CONTA_CLIENTE, json);
+            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_GERENTE_CLIENTE, json);
+            return new ResponseEntity<>("Enfileirado: " + json, HttpStatus.CREATED);
+        }else{
+            return new ResponseEntity<>(verificacao.getMenssagem(), HttpStatus.OK);
+        }
+        
     }
 
    

@@ -6,6 +6,8 @@ package com.bantads.orquestrador.bantadsorquestrador.dto;
 
 import java.io.Serializable;
 
+import com.bantads.orquestrador.bantadsorquestrador.utils.Cpf;
+
 /**
  *
  * @author leonardozanotti
@@ -22,15 +24,26 @@ public class ClienteDTO implements Serializable {
     private String cep;
     private String rua;
     private int numero;
-    private String complemento;    
+    private String complemento;
     private String cargo;
     private boolean ativo;
 
     public ClienteDTO() {
         super();
     }
-    
-    public ClienteDTO(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
+
+    public ValidaReponse ValidaCliente() {
+
+        Boolean cpf_valido = Cpf.isCPF(cpf);
+        if(cpf_valido == false){
+            return new ValidaReponse("Cpf inválido", false);
+        }
+        return new ValidaReponse("Usuario válido", true);
+
+    }
+
+    public ClienteDTO(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade,
+            String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
         this.nome = nome;
         this.email = email;
@@ -47,7 +60,8 @@ public class ClienteDTO implements Serializable {
         this.ativo = ativo;
     }
 
-    public ClienteDTO(Long id, String nome, String email, String senha, String cpf, String telefone, int estado, int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
+    public ClienteDTO(Long id, String nome, String email, String senha, String cpf, String telefone, int estado,
+            int cidade, String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
         this.id = id;
         this.nome = nome;
@@ -64,7 +78,7 @@ public class ClienteDTO implements Serializable {
         this.cargo = cargo;
         this.ativo = ativo;
     }
-    
+
     public Long getId() {
         return id;
     }
