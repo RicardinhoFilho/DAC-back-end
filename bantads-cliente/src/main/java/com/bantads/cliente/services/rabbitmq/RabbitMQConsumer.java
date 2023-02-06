@@ -18,12 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Component
 public class RabbitMQConsumer {
-    // @Autowired
-    // private ObjectMapper objectMapper;
+    public static final String FILA_REGISTRO_CLIENTE = "FILA_REGISTRO_CLIENTE";
+     @Autowired
+     private ObjectMapper objectMapper;
     
-    // @RabbitListener(queues="ufpr.teste")
-    // public void receiveMessage(String msg) throws JsonMappingException, JsonProcessingException {
-    //     var cliente = objectMapper.readValue(msg, ClienteDTO.class);
-    //     System.out.println("RECEBIDA ("+ cliente.getNome() + ") "+ msg);
-    // }
+     @RabbitListener(queues=FILA_REGISTRO_CLIENTE)
+     public void receiveMessage(String msg) throws JsonMappingException, JsonProcessingException {
+         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
+         System.out.println("RECEBIDA ("+ cliente.getNome() + ") "+ msg);
+     }
 }
