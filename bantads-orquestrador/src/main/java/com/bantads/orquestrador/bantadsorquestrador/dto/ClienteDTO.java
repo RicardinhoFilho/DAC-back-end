@@ -6,6 +6,7 @@ package com.bantads.orquestrador.bantadsorquestrador.dto;
 
 import java.io.Serializable;
 
+import com.bantads.orquestrador.bantadsorquestrador.services.rest.RestCliente;
 import com.bantads.orquestrador.bantadsorquestrador.utils.Cpf;
 
 /**
@@ -33,11 +34,22 @@ public class ClienteDTO implements Serializable {
     }
 
     public ValidaReponse ValidaCliente() {
-
-        Boolean cpf_valido = Cpf.isCPF(cpf);
-        if(cpf_valido == false){
-            return new ValidaReponse("Cpf inválido", false);
+        String cpf_sem_pontuacao = cpf.replace(".", "").replace("-", "");
+        //
+        Boolean cpf_valido = Cpf.isCPF(cpf_sem_pontuacao);
+        if (cpf_valido == false) {
+            return new ValidaReponse("Cpf:" + cpf_sem_pontuacao + "-inválido", false);
         }
+        ClienteDTO clientePorCPF = RestCliente.GetClienteByCpf(cpf);
+        if (clientePorCPF != null) {
+            return new ValidaReponse("Já foi cadastrado um usuário com este cpf em nossa base!", false);
+        }
+
+        ClienteDTO clientePorEmail = RestCliente.GetClienteByEmail(email);
+        if (clientePorEmail != null) {
+            return new ValidaReponse("Já foi cadastrado um usuário com este email:" + email, false);
+        }
+
         return new ValidaReponse("Usuario válido", true);
 
     }
