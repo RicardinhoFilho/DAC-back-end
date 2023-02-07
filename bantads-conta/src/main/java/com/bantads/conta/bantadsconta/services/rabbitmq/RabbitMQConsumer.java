@@ -31,12 +31,12 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = FILA_REGISTRO_CONTA_CLIENTE)
     public void registraNovoCliente(String msg) throws JsonMappingException, JsonProcessingException {
         var conta = objectMapper.readValue(msg, ContaDTO.class);
-
+        var id_gerente_menos_clientes = contaRepository.idGerenteMenosClientes().get(0);
       ContaCUD c = new ContaCUD(
-                conta.getIdUsuario(), new Date(System.currentTimeMillis()), false, conta.getSaldo(), conta.getIdGerente(),
+                conta.getIdUsuario(), new Date(System.currentTimeMillis()), false, conta.getSaldo(), id_gerente_menos_clientes,
            conta.getSalario());
 
-      var teste=  contaRepository.save(c);
-        System.out.println("Salvo (" +msg + ") " + teste.getIdUsuario());
+       contaRepository.save(c);
+        System.out.println("Salvo (" +msg + ") " + conta.getIdUsuario());
     }
 }
