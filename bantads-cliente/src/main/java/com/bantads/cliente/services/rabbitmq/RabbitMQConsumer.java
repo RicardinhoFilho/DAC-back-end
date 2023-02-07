@@ -32,6 +32,7 @@ public class RabbitMQConsumer {
         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
        
         Cliente u = new Cliente(
+            cliente.getId(),
             cliente.getNome(),
             cliente.getEmail(),
                 Security.generateStrongPassword(),
