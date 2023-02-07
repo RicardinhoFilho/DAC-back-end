@@ -6,7 +6,7 @@ CREATE DATABASE conta;
 
 CREATE TABLE transacao (
 	id_transacao SERIAL PRIMARY KEY,
-	id_cliente INTEGER,
+	id_cliente BIGINT,
 	tipo_transacao INTEGER,
 	data_transacao DATE,
 	saldo FLOAT,
@@ -21,7 +21,7 @@ INSERT INTO transacao(id_cliente, tipo_transacao, data_transacao, saldo, valor_t
 
 CREATE TABLE conta (
 	id_conta SERIAL PRIMARY KEY,
-	id_usuario INTEGER,
+	id_usuario BIGINT ,
 	data DATE,
 	ativo BOOLEAN,
 	saldo FLOAT,

@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Component
 public class RabbitMQConsumer {
     public static final String FILA_REGISTRO_CLIENTE = "FILA_REGISTRO_CLIENTE";
-    @Autowired
+   // @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private ClienteRepository clienteRepository;

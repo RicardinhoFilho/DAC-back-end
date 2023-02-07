@@ -40,7 +40,7 @@ public class TransacaoCUD {
 
 	public TransacaoCUD(TransacaoDTO transacao) {
     	this.id = transacao.getId();
-    	this.data = transacao.getData();
+    	this.data = new java.sql.Date(transacao.getData().getTime());
     	this.idCliente = transacao.getIdCliente();
     	this.tipoTransacao = transacao.getTipoTransacao();
     	this.valorTransacao = transacao.getValorTransacao();

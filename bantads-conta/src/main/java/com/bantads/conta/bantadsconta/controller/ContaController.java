@@ -2,7 +2,10 @@ package com.bantads.conta.bantadsconta.controller;
 
 import com.bantads.conta.bantadsconta.DTO.ContaDTO;
 import com.bantads.conta.bantadsconta.data.ContaRepository;
+import com.bantads.conta.bantadsconta.data.CUD.ContaCUDRepository;
 import com.bantads.conta.bantadsconta.model.Conta;
+import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
+
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -26,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("conta")
 public class ContaController {
     @Autowired
-    private ContaRepository contaRepository;
+    private ContaCUDRepository contaRepository;
     
     @Autowired
     private ModelMapper mapper;
@@ -34,7 +37,7 @@ public class ContaController {
     @GetMapping("/list")
     public ResponseEntity<List<ContaDTO>> getContas() {
         try {
-            List<Conta> contas = contaRepository.findAll();
+            List<ContaCUD> contas = contaRepository.findAll();
             List<ContaDTO> response = Arrays.asList(mapper.map(contas, ContaDTO[].class));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -45,7 +48,7 @@ public class ContaController {
     @GetMapping("/{id}")
     public ResponseEntity<ContaDTO> getConta(@PathVariable Long id) {
         try {
-            Optional<Conta> contaOp = contaRepository.findById(id);
+            Optional<ContaCUD> contaOp = contaRepository.findById(id);
 
             if (contaOp.isPresent()) {
                 ContaDTO response = mapper.map(contaOp.get(), ContaDTO.class);
@@ -58,48 +61,48 @@ public class ContaController {
         }
     }
     
-    @GetMapping("/por-usuario/{userId}")
-    public ResponseEntity<ContaDTO> getContaPorUserId(@PathVariable Long userId) {
-        try {
-            Optional<Conta> contaOp = contaRepository.findByIdUsuario(userId);
+    // @GetMapping("/por-usuario/{userId}")
+    // public ResponseEntity<ContaDTO> getContaPorUserId(@PathVariable Long userId) {
+    //     try {
+    //         Optional<ContaCUD> contaOp = contaRepository.findByIdUsuario(userId);
 
-            if (contaOp.isPresent()) {
-                ContaDTO response = mapper.map(contaOp.get(), ContaDTO.class);
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
+    //         if (contaOp.isPresent()) {
+    //             ContaDTO response = mapper.map(contaOp.get(), ContaDTO.class);
+    //             return ResponseEntity.ok(response);
+    //         } else {
+    //             return ResponseEntity.notFound().build();
+    //         }
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(500).build();
+    //     }
+    // }
     
-    @GetMapping("/por-gerente/{gerenteId}")
-    public ResponseEntity<List<ContaDTO>> getContaPorGerenteId(@PathVariable Long gerenteId) {
-        try {
-            List<Conta> contas = contaRepository.findByIdGerente(gerenteId);
-            List<ContaDTO> response = Arrays.asList(mapper.map(contas, ContaDTO[].class));
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
+    // @GetMapping("/por-gerente/{gerenteId}")
+    // public ResponseEntity<List<ContaDTO>> getContaPorGerenteId(@PathVariable Long gerenteId) {
+    //     try {
+    //         List<Conta> contas = contaRepository.findByIdGerente(gerenteId);
+    //         List<ContaDTO> response = Arrays.asList(mapper.map(contas, ContaDTO[].class));
+    //         return ResponseEntity.ok(response);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(500).build();
+    //     }
+    // }
     
-    @GetMapping("/pendentes/{gerenteId}")
-    public ResponseEntity<List<ContaDTO>> getPendentesPorGerenteId(@PathVariable Long gerenteId) {
-        try {
-            List<Conta> contas = contaRepository.findPendentesByIdGerente(gerenteId);
-            List<ContaDTO> response = Arrays.asList(mapper.map(contas, ContaDTO[].class));
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
+    // @GetMapping("/pendentes/{gerenteId}")
+    // public ResponseEntity<List<ContaDTO>> getPendentesPorGerenteId(@PathVariable Long gerenteId) {
+    //     try {
+    //         List<Conta> contas = contaRepository.findPendentesByIdGerente(gerenteId);
+    //         List<ContaDTO> response = Arrays.asList(mapper.map(contas, ContaDTO[].class));
+    //         return ResponseEntity.ok(response);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(500).build();
+    //     }
+    // }
 
     @PostMapping("/novo")
     ResponseEntity<ContaDTO> cadastro(@RequestBody ContaDTO contaDto) {
         try {
-            Conta c = new Conta(
+            ContaCUD c = new ContaCUD(
                     contaDto.getIdUsuario(),
                     contaDto.getData(),
                     false,
@@ -107,7 +110,7 @@ public class ContaController {
                     contaDto.getIdGerente(),
                     contaDto.getSalario()
             );
-            Conta conta = contaRepository.save(c);
+            ContaCUD conta = contaRepository.save(c);
             if (conta != null) {
                 ContaDTO response = mapper.map(conta, ContaDTO.class);
                 return new ResponseEntity<ContaDTO>(HttpStatus.CREATED);
@@ -119,29 +122,29 @@ public class ContaController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ContaDTO> putConta(@PathVariable Long id, @RequestBody ContaDTO contaUp) {
-        try {
-            Optional<Conta> contaOp = contaRepository.findById(id);
-            if (contaOp.isPresent()) {
-                Conta conta = contaOp.get();
-                conta.setIdUsuario(contaUp.getIdUsuario());
-                conta.setData(contaUp.getData());
-                conta.setAtivo(contaUp.isAtivo());
-                conta.setSaldo(contaUp.getSaldo());
-                conta.setIdGerente(contaUp.getIdGerente());
-                conta.setSalario(contaUp.getSalario());
-                conta.setRejeitadoMotivo(contaUp.getRejeitadoMotivo());
-                conta.setRejeitadoData(contaUp.getRejeitadoData());
-                conta = contaRepository.save(conta);
-                ContaDTO response = mapper.map(conta, ContaDTO.class);
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
+    // @PutMapping("/{id}")
+    // public ResponseEntity<ContaDTO> putConta(@PathVariable Long id, @RequestBody ContaDTO contaUp) {
+    //     try {
+    //         Optional<Conta> contaOp = contaRepository.findById(id);
+    //         if (contaOp.isPresent()) {
+    //             Conta conta = contaOp.get();
+    //             conta.setIdUsuario(contaUp.getIdUsuario());
+    //             conta.setData(contaUp.getData());
+    //             conta.setAtivo(contaUp.isAtivo());
+    //             conta.setSaldo(contaUp.getSaldo());
+    //             conta.setIdGerente(contaUp.getIdGerente());
+    //             conta.setSalario(contaUp.getSalario());
+    //             conta.setRejeitadoMotivo(contaUp.getRejeitadoMotivo());
+    //             conta.setRejeitadoData(contaUp.getRejeitadoData());
+    //             conta = contaRepository.save(conta);
+    //             ContaDTO response = mapper.map(conta, ContaDTO.class);
+    //             return ResponseEntity.ok(response);
+    //         } else {
+    //             return ResponseEntity.notFound().build();
+    //         }
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(500).build();
+    //     }
+    // }
 
 }
