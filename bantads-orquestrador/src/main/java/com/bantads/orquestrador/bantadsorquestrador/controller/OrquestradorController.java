@@ -42,9 +42,8 @@ public class OrquestradorController {
         if (verificacao.getStatus() == true) {
             var json = objectMapper.writeValueAsString(clienteDto);
             rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CLIENTE, json);
-            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_AUTENTICACAO_CLIENTE, json);
-            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CONTA_CLIENTE, json);
-            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_GERENTE_CLIENTE, json);
+            // rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_AUTENTICACAO_CLIENTE, json);
+            // rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_GERENTE_CLIENTE, json);
             return new ResponseEntity<>("Enfileirado: " + json, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(verificacao.getMenssagem(), HttpStatus.OK);

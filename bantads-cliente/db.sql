@@ -5,7 +5,7 @@ CREATE DATABASE cliente;
 \c cliente;
 
 CREATE TABLE cliente (
-	id SERIAL PRIMARY KEY,
+	id bigint PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
 	email VARCHAR(50) NOT NULL,
 	senha VARCHAR(1000) NOT NULL,

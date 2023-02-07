@@ -76,7 +76,6 @@ public class Cliente implements Serializable {
     }
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id", unique=true, nullable = false)
     public Long getId() {
