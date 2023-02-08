@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Component
 public class RabbitMQConsumer {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
     public static final String FILA_REGISTRO_CLIENTE = "FILA_REGISTRO_CLIENTE";
+    public static final String FILA_ERRO_NOVO_CLIENTE = "FILA_ERRO_NOVO_CLIENTE";
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -30,24 +34,32 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = FILA_REGISTRO_CLIENTE)
     public void registraNovoCliente(String msg) throws JsonMappingException, JsonProcessingException {
         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
-       
-        Cliente u = new Cliente(
-            cliente.getId(),
-            cliente.getNome(),
-            cliente.getEmail(),
-                Security.generateStrongPassword(),
-                cliente.getCpf(),
-                cliente.getTelefone(),
-                cliente.getEstado(),
-                cliente.getCidade(),
-                cliente.getCep(),
-                cliente.getRua(),
-                cliente.getNumero(),
-                cliente.getComplemento(),
-                cliente.getCargo(),
-                cliente.isAtivo());
+        try {
+            Cliente u = new Cliente(
+                    cliente.getId(),
+                    cliente.getNome(),
+                    cliente.getEmail(),
+                    Security.generateStrongPassword(),
+                    cliente.getCpf(),
+                    cliente.getTelefone(),
+                    cliente.getEstado(),
+                    cliente.getCidade(),
+                    cliente.getCep(),
+                    cliente.getRua(),
+                    cliente.getNumero(),
+                    cliente.getComplemento(),
+                    cliente.getCargo(),
+                    cliente.isAtivo());
 
-        clienteRepository.save(u);
-        System.out.println("Salvo (" + u.getNome() + ") " + msg);
+            clienteRepository.save(u);
+            System.out.println("Salvo (" + u.getNome() + ") " + msg);
+            throw new Exception("");
+        } catch (Exception e) {
+            // ROLLBACK
+            System.out.println("Erro ao salvar cliente (" + cliente.getNome() + ") " + msg);
+            var id_erro = objectMapper.writeValueAsString(cliente.getId());
+            rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE, id_erro);
+        }
+
     }
 }

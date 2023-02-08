@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class RabbitMQConsumer {
     public static final String FILA_REGISTRO_CONTA_CLIENTE = "FILA_REGISTRO_CONTA_CLIENTE";
+    public static final String FILA_ERRO_NOVO_CLIENTE = "FILA_ERRO_NOVO_CLIENTE";
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -39,4 +40,20 @@ public class RabbitMQConsumer {
        contaRepository.save(c);
         System.out.println("Salvo (" +msg + ") " + conta.getIdUsuario());
     }
+
+    @RabbitListener(queues = FILA_ERRO_NOVO_CLIENTE)
+    public void erroCriacaoClienteRollBack(String msg) throws JsonMappingException, JsonProcessingException {
+    //     var conta = objectMapper.readValue(msg, ContaDTO.class);
+    //     var id_gerente_menos_clientes = contaRepository.idGerenteMenosClientes().get(0);
+    //   ContaCUD c = new ContaCUD(
+    //             conta.getIdUsuario(), new Date(System.currentTimeMillis()), false, conta.getSaldo(), id_gerente_menos_clientes,
+    //        conta.getSalario());
+
+    //    contaRepository.save(c);
+        System.out.println("Excluir (" +msg + ") " );
+    }
+ 
+
 }
+
+
