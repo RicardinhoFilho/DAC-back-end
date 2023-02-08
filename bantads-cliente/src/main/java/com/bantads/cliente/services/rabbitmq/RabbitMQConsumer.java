@@ -26,6 +26,7 @@ public class RabbitMQConsumer {
     private RabbitTemplate rabbitTemplate;
     public static final String FILA_REGISTRO_CLIENTE = "FILA_REGISTRO_CLIENTE";
     public static final String FILA_ERRO_NOVO_CLIENTE = "FILA_ERRO_NOVO_CLIENTE";
+    public static final String FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO = "FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO";
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -58,7 +59,10 @@ public class RabbitMQConsumer {
             // ROLLBACK
             System.out.println("Erro ao salvar cliente (" + cliente.getNome() + ") " + msg);
             var id_erro = objectMapper.writeValueAsString(cliente.getId());
+            
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE, id_erro);
+            rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO, id_erro);
+            
         }
 
     }

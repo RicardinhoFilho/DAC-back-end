@@ -81,6 +81,7 @@ public class OrquestradorController {
         if (verificacao.getStatus() == true) {
             var jsonCliente = objectMapper.writeValueAsString(clienteDto);
             rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CLIENTE, jsonCliente);
+            rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_AUTENTICACAO_CLIENTE, jsonCliente);
 
             var jsonConta = objectMapper.writeValueAsString(contaDTO);
             rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_REGISTRO_CONTA_CLIENTE, jsonConta);
@@ -96,10 +97,5 @@ public class OrquestradorController {
 
     }
 
-    // @PostMapping("/conta")
-    // ResponseEntity<?> enfileirarCliente(@RequestBody ContaDTO contaDto) throws
-    // JsonProcessingException {
-
-    // }
-
+    
 }
