@@ -53,7 +53,7 @@ public class RabbitMQConsumer {
 
             clienteRepository.save(u);
             System.out.println("Salvo (" + u.getNome() + ") " + msg);
-            throw new Exception("");
+
         } catch (Exception e) {
             // ROLLBACK
             System.out.println("Erro ao salvar cliente (" + cliente.getNome() + ") " + msg);

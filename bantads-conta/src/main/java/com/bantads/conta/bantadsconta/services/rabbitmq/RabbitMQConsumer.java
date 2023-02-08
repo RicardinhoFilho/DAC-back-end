@@ -43,13 +43,9 @@ public class RabbitMQConsumer {
 
     @RabbitListener(queues = FILA_ERRO_NOVO_CLIENTE)
     public void erroCriacaoClienteRollBack(String msg) throws JsonMappingException, JsonProcessingException {
-    //     var conta = objectMapper.readValue(msg, ContaDTO.class);
-    //     var id_gerente_menos_clientes = contaRepository.idGerenteMenosClientes().get(0);
-    //   ContaCUD c = new ContaCUD(
-    //             conta.getIdUsuario(), new Date(System.currentTimeMillis()), false, conta.getSaldo(), id_gerente_menos_clientes,
-    //        conta.getSalario());
-
-    //    contaRepository.save(c);
+        Long id_usuario = objectMapper.readValue(msg, Long.class);
+        contaRepository.excluirPorCliente(id_usuario);
+    
         System.out.println("Excluir (" +msg + ") " );
     }
  
