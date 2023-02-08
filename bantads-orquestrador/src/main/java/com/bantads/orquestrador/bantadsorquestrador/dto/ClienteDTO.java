@@ -42,6 +42,7 @@ public class ClienteDTO implements Serializable {
         }
         ClienteDTO clientePorCPF = RestCliente.GetClienteByCpf(cpf);
         if (clientePorCPF != null) {
+            System.out.println("CPF REPETIDO: "+cpf);
             return new ValidaReponse("Já foi cadastrado um usuário com este cpf em nossa base!", false);
         }
 
@@ -54,9 +55,10 @@ public class ClienteDTO implements Serializable {
 
     }
 
-    public ClienteDTO(String nome, String email, String senha, String cpf, String telefone, int estado, int cidade,
+    public ClienteDTO(long id,String nome, String email, String senha, String cpf, String telefone, int estado, int cidade,
             String cep, String rua, int numero, String complemento, String cargo, boolean ativo) {
         super();
+        this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
