@@ -6,6 +6,7 @@ package com.bantads.cliente.services.rabbitmq;
 
 import com.bantads.cliente.dto.ClienteDTO;
 import com.bantads.cliente.model.Cliente;
+import com.bantads.cliente.model.Notificacao;
 import com.bantads.cliente.repository.ClienteRepository;
 import com.bantads.cliente.services.email.MailSenderService;
 import com.bantads.cliente.utils.Security;
@@ -31,6 +32,7 @@ public class RabbitMQConsumer {
     public static final String FILA_UPDATE_CLIENTE = "FILA_UPDATE_CLIENTE";
     public static final String FILA_ERRO_UPDATE_CLIENTE = "FILA_ERRO_UPDATE_CLIENTE";
     public static final String FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO = "FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO";
+    public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -38,6 +40,7 @@ public class RabbitMQConsumer {
 
     @Autowired
     private MailSenderService mailService;
+
     @RabbitListener(queues = FILA_REGISTRO_CLIENTE)
     public void registraNovoCliente(String msg) throws JsonMappingException, JsonProcessingException {
         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
@@ -61,7 +64,7 @@ public class RabbitMQConsumer {
             clienteRepository.save(u);
             System.out.println("Salvo (" + u.getNome() + ") " + msg);
             mailService.sendMail(cliente.getEmail(), "BANTADS - Conta criada com sucesso!",
-            "Sua conta foi criada com sucesso!!");
+                    "Sua conta foi criada com sucesso!!");
 
         } catch (Exception e) {
             // ROLLBACK
@@ -71,7 +74,7 @@ public class RabbitMQConsumer {
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE, id_erro);
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO, id_erro);
             mailService.sendMail(cliente.getEmail(), "BANTADS - Não foi possível criar sua conta!",
-            "Não foi possível criar sua conta!!");
+                    "Não foi possível criar sua conta!!");
         }
 
     }
@@ -109,4 +112,23 @@ public class RabbitMQConsumer {
         }
 
     }
+
+    @RabbitListener(queues = FILA_NOTIFICA_UPDATE_CONTA)
+    public void notificaAtualizacaoConta(String msg) throws JsonMappingException, JsonProcessingException {
+        var notificacao = objectMapper.readValue(msg, Notificacao.class);
+
+        var cliente = clienteRepository.findById(notificacao.getIdUsuario()).get();
+
+        if (notificacao.getStatus() == true) {
+            mailService.sendMail(cliente.getEmail(), "BANTADS - Seja bem vindo!",
+                    "Sua conta foi analisada e aceita por nossa equipe. Acesse sua conta com a senha: "
+                            + cliente.getSenha() + "!");
+        } else {
+            mailService.sendMail(cliente.getEmail(), "BANTADS - Conta recusada!",
+                    "Sua conta foi analisada e recusada por nossa equipe. Motivo: "
+                            + notificacao.getMessage() + "!");
+        }
+
+    }
+
 }

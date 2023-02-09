@@ -176,5 +176,10 @@ public class ClienteController {
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
+
+
+     
     }
+
+    
 }
