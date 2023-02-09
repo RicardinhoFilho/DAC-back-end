@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -97,5 +98,23 @@ public class OrquestradorController {
 
     }
 
-    
+    @PutMapping("/cliente")
+    ResponseEntity<?> enfileirarUpdateCliente(@RequestBody ClienteDTO clienteDto)
+            throws JsonProcessingException {
+
+        // return new ResponseEntity<>( objectMapper.writeValueAsString(verificacao),
+        // HttpStatus.CREATED);
+
+        var jsonCliente = objectMapper.writeValueAsString(clienteDto);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_UPDATE_CLIENTE, jsonCliente);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_UPDATE_AUTENTICACAO_CLIENTE, jsonCliente);
+
+        System.out.println(jsonCliente);
+
+        var jsonResponse = objectMapper
+                .writeValueAsString(new ResponseFormat(true, "Update Cliente enfileirado"));
+        return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
+
+    }
+
 }
