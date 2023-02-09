@@ -73,9 +73,10 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = FILA_UPDATE_CLIENTE)
     public void updateCliente(String msg) throws JsonMappingException, JsonProcessingException {
         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
-        try {
-            Long id = (cliente.getId());
-            if (id != null) {
+        Long id = (cliente.getId());
+        if (id != null) {
+            try {
+
                 var userFromDb = clienteRepository.findById(id);
                 userFromDb.get().setNome(cliente.getNome());
                 userFromDb.get().setSenha(cliente.getSenha());
@@ -91,16 +92,13 @@ public class RabbitMQConsumer {
 
                 // clienteRepository.;
                 System.out.println("Salvo (" + cliente.getNome() + ") " + msg);
+
+            } catch (Exception e) {
+                // ROLLBACK
+                System.out.println("Erro ao salvar edição do cliente (" + cliente.getNome() + ") " + msg);
+
+                rabbitTemplate.convertAndSend(FILA_ERRO_UPDATE_CLIENTE, clienteRepository.findById(id));
             }
-
-        } catch (Exception e) {
-            // ROLLBACK
-            System.out.println("Erro ao salvar cliente (" + cliente.getNome() + ") " + msg);
-            var id_erro = objectMapper.writeValueAsString(cliente.getId());
-
-            rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE, id_erro);
-            rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO, id_erro);
-
         }
 
     }
