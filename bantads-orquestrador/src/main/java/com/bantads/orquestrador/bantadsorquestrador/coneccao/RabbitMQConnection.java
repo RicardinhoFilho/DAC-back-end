@@ -45,6 +45,8 @@ public class RabbitMQConnection {
 		Queue FILA_ERRO_UPDATE_CLIENTE = this.fila(RabbitmqConstantes.FILA_ERRO_UPDATE_CLIENTE);
 		Queue FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE = this
 				.fila(RabbitmqConstantes.FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE);
+		Queue FILA_UPDATE_CONTA = this
+				.fila(RabbitmqConstantes.FILA_UPDATE_CONTA);
 
 		DirectExchange troca = this.trocaDireta();
 
@@ -61,6 +63,9 @@ public class RabbitMQConnection {
 		Binding LIGACAO_FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE = this
 				.relacionamento(FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE, troca);
 
+		Binding LIGACAO_FILA_UPDATE_CONTA = this
+				.relacionamento(FILA_UPDATE_CONTA, troca);
+
 		// Criando as filas no RabbitMQ
 		this.amqpAdmin.declareQueue(FILA_REGISTRO_CLIENTE);
 		this.amqpAdmin.declareQueue(FILA_AUTENTICACAO_CLIENTE);
@@ -72,6 +77,7 @@ public class RabbitMQConnection {
 		this.amqpAdmin.declareQueue(FILA_UPDATE_AUTENTICACAO_CLIENTE);
 		this.amqpAdmin.declareQueue(FILA_ERRO_UPDATE_CLIENTE);
 		this.amqpAdmin.declareQueue(FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE);
+		this.amqpAdmin.declareQueue(FILA_UPDATE_CONTA);
 
 		this.amqpAdmin.declareExchange(troca);
 
@@ -85,6 +91,7 @@ public class RabbitMQConnection {
 		this.amqpAdmin.declareBinding(LIGACAO_FILA_UPDATE_AUTENTICACAO_CLIENTE);
 		this.amqpAdmin.declareBinding(LIGACAO_FILA_ERRO_UPDATE_CLIENTE);
 		this.amqpAdmin.declareBinding(LIGACAO_FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE);
+		this.amqpAdmin.declareBinding(LIGACAO_FILA_UPDATE_CONTA);
 
 	}
 }

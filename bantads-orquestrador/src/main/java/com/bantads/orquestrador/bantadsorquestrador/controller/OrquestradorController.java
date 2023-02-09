@@ -117,4 +117,22 @@ public class OrquestradorController {
 
     }
 
+    @PutMapping("/conta")
+    ResponseEntity<?> enfileirarConta(@RequestBody ContaDTO contaDTO)
+            throws JsonProcessingException {
+
+        // return new ResponseEntity<>( objectMapper.writeValueAsString(verificacao),
+        // HttpStatus.CREATED);
+
+        var JSON = objectMapper.writeValueAsString(contaDTO);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_UPDATE_CONTA, JSON);
+
+        System.out.println(JSON);
+
+        var jsonResponse = objectMapper
+                .writeValueAsString(new ResponseFormat(true, "Update Conta enfileirado"));
+        return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
+
+    }
+
 }
