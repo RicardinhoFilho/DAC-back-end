@@ -24,6 +24,7 @@ import com.bantads.orquestrador.bantadsorquestrador.constantes.RabbitmqConstante
 import com.bantads.orquestrador.bantadsorquestrador.dto.ClienteCompletoDTO;
 import com.bantads.orquestrador.bantadsorquestrador.dto.ClienteDTO;
 import com.bantads.orquestrador.bantadsorquestrador.dto.ContaDTO;
+import com.bantads.orquestrador.bantadsorquestrador.dto.GerenteDTO;
 import com.bantads.orquestrador.bantadsorquestrador.dto.ResponseFormat;
 import com.bantads.orquestrador.bantadsorquestrador.dto.ValidaReponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -135,4 +136,25 @@ public class OrquestradorController {
 
     }
 
+
+    @PostMapping("/gerente")
+    ResponseEntity<?> enfileirarGerente(@RequestBody GerenteDTO gerenteDTO)
+            throws JsonProcessingException {
+
+        // return new ResponseEntity<>( objectMapper.writeValueAsString(verificacao),
+        // HttpStatus.CREATED);
+
+        var JSON = objectMapper.writeValueAsString(gerenteDTO);
+        rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_CREATE_GERENTE, JSON);
+
+        System.out.println(JSON);
+
+        var jsonResponse = objectMapper
+                .writeValueAsString(new ResponseFormat(true, "Administrador enfileirado"));
+        return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
+
+    }
+
+
+    
 }
