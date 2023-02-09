@@ -19,6 +19,8 @@ public interface ContaCUDRepository extends JpaRepository<ContaCUD, Long> {
      @Query(value="delete from conta where id_usuario = ?1 ",nativeQuery=true)
      @Modifying
      public void excluirPorCliente(Long id_usuario);
+
+     
  }
      
      
