@@ -20,6 +20,7 @@ public class RabbitmqConstantes {
 
     // UPDATE_CONTA
     public static final String FILA_UPDATE_CONTA = "FILA_UPDATE_CONTA";
+    public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
 
     public static final String FILA_REGISTRO_GERENTE_CLIENTE = "FILA_REGISTRO_GERENTE_CLIENTE";
 }

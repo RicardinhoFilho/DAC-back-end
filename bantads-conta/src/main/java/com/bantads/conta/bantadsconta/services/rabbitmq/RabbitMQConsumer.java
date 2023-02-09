@@ -3,6 +3,7 @@ package com.bantads.conta.bantadsconta.services.rabbitmq;
 import java.sql.Date;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import com.bantads.conta.bantadsconta.DTO.ContaDTO;
 import com.bantads.conta.bantadsconta.data.ContaRepository;
 import com.bantads.conta.bantadsconta.data.CUD.ContaCUDRepository;
 import com.bantads.conta.bantadsconta.model.Conta;
+import com.bantads.conta.bantadsconta.model.Notificacao;
 import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -25,6 +27,9 @@ public class RabbitMQConsumer {
     public static final String FILA_REGISTRO_CONTA_CLIENTE = "FILA_REGISTRO_CONTA_CLIENTE";
     public static final String FILA_ERRO_NOVO_CLIENTE = "FILA_ERRO_NOVO_CLIENTE";
     public static final String FILA_UPDATE_CONTA = "FILA_UPDATE_CONTA";
+    public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -66,7 +71,12 @@ public class RabbitMQConsumer {
             contaByDb.setRejeitadoData(new Date(System.currentTimeMillis()));
 
         contaRepository.save(contaByDb);
+        Notificacao notificacao = new Notificacao(contaByDb.isAtivo(), contaByDb.getRejeitadoMotivo(),
+                contaByDb.getIdUsuario());
+        var NOTIFICACAO = objectMapper.writeValueAsString(notificacao);
         System.out.println("Atualização de conta salva(" + msg + ") ");
+        rabbitTemplate.convertAndSend(FILA_NOTIFICA_UPDATE_CONTA, NOTIFICACAO);
+        System.out.println("Envio de email inserido na lista");
     }
 
 }
