@@ -7,6 +7,7 @@ package com.bantads.cliente.services.rabbitmq;
 import com.bantads.cliente.dto.ClienteDTO;
 import com.bantads.cliente.model.Cliente;
 import com.bantads.cliente.repository.ClienteRepository;
+import com.bantads.cliente.services.email.MailSenderService;
 import com.bantads.cliente.utils.Security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -35,6 +36,8 @@ public class RabbitMQConsumer {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private MailSenderService mailService;
     @RabbitListener(queues = FILA_REGISTRO_CLIENTE)
     public void registraNovoCliente(String msg) throws JsonMappingException, JsonProcessingException {
         var cliente = objectMapper.readValue(msg, ClienteDTO.class);
@@ -43,7 +46,7 @@ public class RabbitMQConsumer {
                     cliente.getId(),
                     cliente.getNome(),
                     cliente.getEmail(),
-                    Security.generateStrongPassword(),
+                    (Security.hash(cliente.getSenha())),
                     cliente.getCpf(),
                     cliente.getTelefone(),
                     cliente.getEstado(),
@@ -57,6 +60,8 @@ public class RabbitMQConsumer {
 
             clienteRepository.save(u);
             System.out.println("Salvo (" + u.getNome() + ") " + msg);
+            mailService.sendMail(cliente.getEmail(), "BANTADS - Conta criada com sucesso!",
+            "Sua conta foi criada com sucesso!!");
 
         } catch (Exception e) {
             // ROLLBACK
@@ -65,7 +70,8 @@ public class RabbitMQConsumer {
 
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE, id_erro);
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO, id_erro);
-
+            mailService.sendMail(cliente.getEmail(), "BANTADS - Não foi possível criar sua conta!",
+            "Não foi possível criar sua conta!!");
         }
 
     }
@@ -79,7 +85,7 @@ public class RabbitMQConsumer {
 
                 var userFromDb = clienteRepository.findById(id);
                 userFromDb.get().setNome(cliente.getNome());
-                userFromDb.get().setSenha(cliente.getSenha());
+                userFromDb.get().setSenha(Security.hash(cliente.getSenha()));
                 userFromDb.get().setTelefone(cliente.getTelefone());
                 userFromDb.get().setEstado(cliente.getEstado());
                 userFromDb.get().setCidade(cliente.getCidade());
@@ -89,7 +95,8 @@ public class RabbitMQConsumer {
                 userFromDb.get().setComplemento(cliente.getComplemento());
                 userFromDb.get().setAtivo(cliente.isAtivo());
                 clienteRepository.save(userFromDb.get());
-
+                mailService.sendMail(cliente.getEmail(), "BANTADS - Conta atualizada com sucesso!",
+                        "Sua conta foi atualizada com sucesso!!");
                 // clienteRepository.;
                 System.out.println("Salvo (" + cliente.getNome() + ") " + msg);
 
