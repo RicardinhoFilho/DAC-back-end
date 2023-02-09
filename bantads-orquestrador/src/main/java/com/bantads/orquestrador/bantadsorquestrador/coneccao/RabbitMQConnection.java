@@ -49,6 +49,11 @@ public class RabbitMQConnection {
 				.fila(RabbitmqConstantes.FILA_UPDATE_CONTA);
 		Queue FILA_NOTIFICA_UPDATE_CONTA = this
 				.fila(RabbitmqConstantes.FILA_NOTIFICA_UPDATE_CONTA);
+		Queue FILA_CREATE_GERENTE = this
+				.fila(RabbitmqConstantes.FILA_CREATE_GERENTE);
+
+		Queue FILA_ATRIBUI_CONTA_GERENTE = this
+				.fila(RabbitmqConstantes.FILA_ATRIBUI_CONTA_GERENTE);
 
 		DirectExchange troca = this.trocaDireta();
 
@@ -70,6 +75,11 @@ public class RabbitMQConnection {
 
 		Binding LIGACAO_FILA_NOTIFICA_UPDATE_CONTA = this
 				.relacionamento(FILA_NOTIFICA_UPDATE_CONTA, troca);
+		Binding LIGACAO_FILA_CREATE_GERENTE = this
+				.relacionamento(FILA_CREATE_GERENTE, troca);
+
+		Binding LIGACAO_FILA_ATRIBUI_CONTA_GERENTE = this
+				.relacionamento(FILA_ATRIBUI_CONTA_GERENTE, troca);
 
 		// Criando as filas no RabbitMQ
 		this.amqpAdmin.declareQueue(FILA_REGISTRO_CLIENTE);
@@ -84,6 +94,8 @@ public class RabbitMQConnection {
 		this.amqpAdmin.declareQueue(FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE);
 		this.amqpAdmin.declareQueue(FILA_UPDATE_CONTA);
 		this.amqpAdmin.declareQueue(FILA_NOTIFICA_UPDATE_CONTA);
+		this.amqpAdmin.declareQueue(FILA_CREATE_GERENTE);
+		this.amqpAdmin.declareQueue(FILA_ATRIBUI_CONTA_GERENTE);
 
 		this.amqpAdmin.declareExchange(troca);
 
@@ -99,5 +111,8 @@ public class RabbitMQConnection {
 		this.amqpAdmin.declareBinding(LIGACAO_FILA_ERRO_UPDATE_AUTENTICACAO_CLIENTE);
 		this.amqpAdmin.declareBinding(LIGACAO_FILA_UPDATE_CONTA);
 		this.amqpAdmin.declareBinding(LIGACAO_FILA_NOTIFICA_UPDATE_CONTA);
+		this.amqpAdmin.declareBinding(LIGACAO_FILA_CREATE_GERENTE);
+		this.amqpAdmin.declareBinding(LIGACAO_FILA_ATRIBUI_CONTA_GERENTE);
+
 	}
 }
