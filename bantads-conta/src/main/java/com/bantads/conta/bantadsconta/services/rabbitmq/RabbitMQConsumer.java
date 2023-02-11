@@ -28,6 +28,7 @@ public class RabbitMQConsumer {
     public static final String FILA_ERRO_NOVO_CLIENTE = "FILA_ERRO_NOVO_CLIENTE";
     public static final String FILA_UPDATE_CONTA = "FILA_UPDATE_CONTA";
     public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
+    public static final String FILA_ATRIBUI_CONTA_GERENTE = "FILA_ATRIBUI_CONTA_GERENTE";
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
@@ -77,6 +78,16 @@ public class RabbitMQConsumer {
         System.out.println("Atualização de conta salva(" + msg + ") ");
         rabbitTemplate.convertAndSend(FILA_NOTIFICA_UPDATE_CONTA, NOTIFICACAO);
         System.out.println("Envio de email inserido na lista");
+    }
+
+    @RabbitListener(queues = FILA_ATRIBUI_CONTA_GERENTE)
+    public void atribuiContaGerente(String msg) throws JsonMappingException, JsonProcessingException {
+        Long id_gerente = objectMapper.readValue(msg, Long.class);
+        var id_gerente_mais_clientes = contaRepository.idGerenteMaisClientes().get(0);
+
+       var conta =  contaRepository.findByIdGerente(id_gerente_mais_clientes).get(0);
+       contaRepository.updateGerenteConta(id_gerente, conta.getId());
+        System.out.println("Atualizada conta (" + conta.getId() + ") ");
     }
 
 }
