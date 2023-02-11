@@ -2,17 +2,24 @@ package com.bantads.conta.bantadsconta.services.rabbitmq;
 
 import java.sql.Date;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.bantads.conta.bantadsconta.DTO.ContaDTO;
+import com.bantads.conta.bantadsconta.DTO.TransacaoContaDTO;
 import com.bantads.conta.bantadsconta.data.ContaRepository;
+import com.bantads.conta.bantadsconta.data.TransacaoRepository;
 import com.bantads.conta.bantadsconta.data.CUD.ContaCUDRepository;
+import com.bantads.conta.bantadsconta.data.R.ContaRRepository;
+import com.bantads.conta.bantadsconta.data.R.TransacaoRRepository;
 import com.bantads.conta.bantadsconta.model.Conta;
 import com.bantads.conta.bantadsconta.model.Notificacao;
 import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
+import com.bantads.conta.bantadsconta.model.R.ContaR;
+import com.bantads.conta.bantadsconta.model.R.TransacaoR;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,12 +37,19 @@ public class RabbitMQConsumer {
     public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
     public static final String FILA_ATRIBUI_CONTA_GERENTE = "FILA_ATRIBUI_CONTA_GERENTE";
     public static final String FILA_DISTRIBUI_CONTAS_GERENTE = "FILA_DISTRIBUI_CONTAS_GERENTE";
+    public static final String FILA_TRANSACAO_INSERIR = "FILA_TRANSACAO_INSERIR";
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private ContaCUDRepository contaRepository;
+    @Autowired
+    private TransacaoRRepository transacaoRRepository;
+    @Autowired
+    private ContaRRepository contaRRepository;
+    @Autowired
+    private ModelMapper mapper;
 
     @RabbitListener(queues = FILA_REGISTRO_CONTA_CLIENTE)
     public void registraNovoCliente(String msg) throws JsonMappingException, JsonProcessingException {
@@ -103,6 +117,26 @@ public class RabbitMQConsumer {
             System.out.println("Atualizada conta (" + contaCUD.getId() + ") ");
         }
 
+    }
+    
+    @RabbitListener(queues = FILA_TRANSACAO_INSERIR)
+    public void transacaoInserir(String msg) throws JsonMappingException, JsonProcessingException {
+    	try {
+	    	TransacaoContaDTO transacaoConta = objectMapper.readValue(msg, TransacaoContaDTO.class);
+	    	
+	    	TransacaoR transacaoR = mapper.map(transacaoConta.getTransacaoCUD(), TransacaoR.class);
+	    	transacaoRRepository.save(transacaoR);
+	    	
+	    	ContaR origem = mapper.map(transacaoConta.getOrigem(), ContaR.class);
+	    	contaRRepository.save(origem);
+	    	
+	    	if(transacaoConta.getDestino() != null) {
+	    		ContaR destino = mapper.map(transacaoConta.getDestino(), ContaR.class);
+	    		contaRRepository.save(destino);
+	    	}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     }
 
 }

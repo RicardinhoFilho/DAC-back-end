@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class EmissorTransacaoConfiguracao {
-	@Value("transacao-inserir-banco")
+	@Value("FILA_TRANSACAO_INSERIR")
 	private String inserirTransacaoBancoLeitura;
 	
 	@Bean

@@ -1,5 +1,6 @@
 package com.bantads.conta.bantadsconta.controller;
 
+import com.bantads.conta.bantadsconta.DTO.TransacaoContaDTO;
 import com.bantads.conta.bantadsconta.DTO.TransacaoDTO;
 import com.bantads.conta.bantadsconta.model.Transacao;
 import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
@@ -104,7 +105,8 @@ public class TransacaoController {
 			}
 			
 			// MANDA PRA FILA PARA ATUALIZAR OS DOIS BANCOS
-			emitirTransacao.enviarInserirBancoLeitura(transacao);
+			TransacaoContaDTO transacaoConta = new TransacaoContaDTO(transacaoCUD, origem, destinatario);
+			emitirTransacao.enviarInserirBancoLeitura(transacaoConta);
 			
 			return ResponseEntity.ok().body(transacao);
 		} catch (Exception ex) {
