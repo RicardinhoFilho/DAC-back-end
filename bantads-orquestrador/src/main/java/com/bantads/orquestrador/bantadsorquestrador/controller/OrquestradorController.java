@@ -116,7 +116,7 @@ public class OrquestradorController {
         System.out.println(jsonCliente);
 
         var jsonResponse = objectMapper
-                .writeValueAsString(new ResponseFormat(true, "Update Cliente enfileirado"));
+                .writeValueAsString(new ResponseFormat(true, jsonCliente));
         return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
 
     }
@@ -134,8 +134,8 @@ public class OrquestradorController {
         System.out.println(JSON);
 
         var jsonResponse = objectMapper
-                .writeValueAsString(new ResponseFormat(true, "Update Conta enfileirado"));
-        return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
+                .writeValueAsString(new ResponseFormat(true, JSON));
+        return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
 
     }
 
@@ -152,7 +152,7 @@ public class OrquestradorController {
         System.out.println(JSON);
 
         var jsonResponse = objectMapper
-                .writeValueAsString(new ResponseFormat(true, "Administrador enfileirado"));
+                .writeValueAsString(new ResponseFormat(true, JSON));
         return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
 
     }
@@ -168,7 +168,7 @@ public class OrquestradorController {
         rabbitTemplate.convertAndSend(RabbitmqConstantes.FILA_DISTRIBUI_CONTAS_GERENTE, JSON);
 
         var jsonResponse = objectMapper
-                .writeValueAsString(new ResponseFormat(true, "Administrador enfileirado"));
+                .writeValueAsString(new ResponseFormat(true, "Enfileirada exclusão do gerente:" + id));
         return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
 
     }
