@@ -27,5 +27,10 @@ public class RabbitmqConstantes {
      public static final String FILA_CREATE_GERENTE = "FILA_CREATE_GERENTE";
      public static final String FILA_ATRIBUI_CONTA_GERENTE = "FILA_ATRIBUI_CONTA_GERENTE";
 
+    // DELETE_GERENTE
+    public static final String FILA_DELETE_GERENTE = "FILA_DELETE_GERENTE";
+    public static final String FILA_DISTRIBUI_CONTAS_GERENTE = "FILA_DISTRIBUI_CONTAS_GERENTE";
+     
+
     public static final String FILA_REGISTRO_GERENTE_CLIENTE = "FILA_REGISTRO_GERENTE_CLIENTE";
 }
