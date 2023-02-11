@@ -2,7 +2,8 @@ package com.bantads.gerente.bantadsgerente;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -27,4 +28,5 @@ public class BantadsGerenteApplication {
 		return new ObjectMapper();
 	}
 
+	
 }

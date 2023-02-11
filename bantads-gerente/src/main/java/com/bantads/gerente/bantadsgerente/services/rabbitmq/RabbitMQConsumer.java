@@ -11,11 +11,14 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
+
 @Component
 public class RabbitMQConsumer {
 
     public static final String FILA_CREATE_GERENTE = "FILA_CREATE_GERENTE";
     public static final String FILA_ATRIBUI_CONTA_GERENTE = "FILA_ATRIBUI_CONTA_GERENTE";
+    public static final String FILA_DELETE_GERENTE = "FILA_DELETE_GERENTE";
+
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -32,7 +35,7 @@ public class RabbitMQConsumer {
                 return;
             }
 
-            if(gerenteRepository.findByEmail(gerente.getEmail())!= null){
+            if (gerenteRepository.findByEmail(gerente.getEmail()) != null) {
                 System.out.println("Já existe um gerente com este email");
                 return;
             }
@@ -51,6 +54,19 @@ public class RabbitMQConsumer {
             System.out.println(e);
 
         }
+
+    }
+
+     @RabbitListener(queues = FILA_DELETE_GERENTE)
+     public void deleteCliente(String msg) throws JsonMappingException, JsonProcessingException {
+         var gerente = objectMapper.readValue(msg, Long.class);
+         try {
+             System.out.println(msg);
+             gerenteRepository.deleteById(gerente);
+         } catch (Exception e) {
+             System.out.println(e);
+
+         }
 
     }
 
