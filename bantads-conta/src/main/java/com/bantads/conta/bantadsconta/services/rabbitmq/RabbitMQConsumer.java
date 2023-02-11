@@ -29,6 +29,7 @@ public class RabbitMQConsumer {
     public static final String FILA_UPDATE_CONTA = "FILA_UPDATE_CONTA";
     public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
     public static final String FILA_ATRIBUI_CONTA_GERENTE = "FILA_ATRIBUI_CONTA_GERENTE";
+    public static final String FILA_DISTRIBUI_CONTAS_GERENTE = "FILA_DISTRIBUI_CONTAS_GERENTE";
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
@@ -85,9 +86,23 @@ public class RabbitMQConsumer {
         Long id_gerente = objectMapper.readValue(msg, Long.class);
         var id_gerente_mais_clientes = contaRepository.idGerenteMaisClientes().get(0);
 
-       var conta =  contaRepository.findByIdGerente(id_gerente_mais_clientes).get(0);
-       contaRepository.updateGerenteConta(id_gerente, conta.getId());
+        var conta = contaRepository.findByIdGerente(id_gerente_mais_clientes).get(0);
+        contaRepository.updateGerenteConta(id_gerente, conta.getId());
         System.out.println("Atualizada conta (" + conta.getId() + ") ");
+    }
+
+    @RabbitListener(queues = FILA_DISTRIBUI_CONTAS_GERENTE)
+    public void distribuiContasGerente(String msg) throws JsonMappingException, JsonProcessingException {
+        Long id_gerente = objectMapper.readValue(msg, Long.class);
+
+        var contas = contaRepository.findByIdGerente(id_gerente);
+
+        for (ContaCUD contaCUD : contas) {
+            var id_gerente_menos_clientes = contaRepository.idGerenteMenosClientesMenosAtual(id_gerente).get(0);
+            contaRepository.updateGerenteConta(id_gerente_menos_clientes, contaCUD.getId());
+            System.out.println("Atualizada conta (" + contaCUD.getId() + ") ");
+        }
+
     }
 
 }

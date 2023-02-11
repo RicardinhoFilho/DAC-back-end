@@ -19,6 +19,9 @@ public interface ContaCUDRepository extends JpaRepository<ContaCUD, Long> {
 
      @Query(value="select id_gerente from conta  group by id_gerente order by count(id_gerente) desc limit 1",nativeQuery=true)
      public List<Long> idGerenteMaisClientes();
+     @Query(value="select id_gerente from conta where id_gerente != ?   group by id_gerente order by count(id_gerente) asc limit 1",nativeQuery=true)
+     public List<Long> idGerenteMenosClientesMenosAtual(Long id_gerente);
+   
 
      public List<ContaCUD> findByIdGerente(Long userId);
 
