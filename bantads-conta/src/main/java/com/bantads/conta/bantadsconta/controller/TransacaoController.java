@@ -2,17 +2,13 @@ package com.bantads.conta.bantadsconta.controller;
 
 import com.bantads.conta.bantadsconta.DTO.TransacaoContaDTO;
 import com.bantads.conta.bantadsconta.DTO.TransacaoDTO;
-import com.bantads.conta.bantadsconta.model.Transacao;
 import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
 import com.bantads.conta.bantadsconta.model.CUD.TransacaoCUD;
 import com.bantads.conta.bantadsconta.model.R.TransacaoR;
 import com.bantads.conta.bantadsconta.services.EmissorTransacao;
-import com.bantads.conta.bantadsconta.data.ContaRepository;
-import com.bantads.conta.bantadsconta.data.TransacaoRepository;
 import com.bantads.conta.bantadsconta.data.CUD.ContaCUDRepository;
 import com.bantads.conta.bantadsconta.data.CUD.TransacaoCUDRepository;
 import com.bantads.conta.bantadsconta.data.R.TransacaoRRepository;
-import com.bantads.conta.bantadsconta.model.Conta;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +57,7 @@ public class TransacaoController {
 		
 	}
 	
-	@PostMapping("/transacao")
+	@PostMapping("/transacaos")
 	public ResponseEntity<TransacaoDTO> inserirUsuario(@RequestBody TransacaoDTO transacao) {
 		
 		try {
@@ -104,7 +100,7 @@ public class TransacaoController {
 				return ResponseEntity.status(500).build();
 			}
 			
-			// MANDA PRA FILA PARA ATUALIZAR OS DOIS BANCOS
+			// MANDA PRA FILA PARA ATUALIZAR O BANCO R
 			TransacaoContaDTO transacaoConta = new TransacaoContaDTO(transacaoCUD, origem, destinatario);
 			emitirTransacao.enviarInserirBancoLeitura(transacaoConta);
 			

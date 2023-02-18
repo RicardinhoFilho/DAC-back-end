@@ -10,12 +10,9 @@ import org.springframework.stereotype.Component;
 
 import com.bantads.conta.bantadsconta.DTO.ContaDTO;
 import com.bantads.conta.bantadsconta.DTO.TransacaoContaDTO;
-import com.bantads.conta.bantadsconta.data.ContaRepository;
-import com.bantads.conta.bantadsconta.data.TransacaoRepository;
 import com.bantads.conta.bantadsconta.data.CUD.ContaCUDRepository;
 import com.bantads.conta.bantadsconta.data.R.ContaRRepository;
 import com.bantads.conta.bantadsconta.data.R.TransacaoRRepository;
-import com.bantads.conta.bantadsconta.model.Conta;
 import com.bantads.conta.bantadsconta.model.Notificacao;
 import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
 import com.bantads.conta.bantadsconta.model.R.ContaR;

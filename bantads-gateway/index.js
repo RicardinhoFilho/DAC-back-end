@@ -343,7 +343,7 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 });
 
 //TRANSACAO
-app.post(process.env.PATH_CONTA, verifyJWT, async (req, res, next) => {
+app.post(process.env.PATH_CONTA + '/transacaos', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_CONTA, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
