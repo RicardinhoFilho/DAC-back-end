@@ -342,6 +342,44 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
+//TRANSACAO
+app.post(process.env.PATH_CONTA, verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_CONTA, {
+    userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
+      if (proxyRes.statusCode == 201) {
+        userRes.status(201);
+        return { message: 'Transacao inserida com sucesso.' };
+      } else {
+        userRes.status(proxyRes.statusCode);
+        return { message: 'Um erro ocorreu ao inserir transação!!!' };
+      }
+    },
+  })(req, res, next);
+});
+
+app.get(process.env.PATH_CONTA + '/transacaos', verifyJWT, async (req, res, next) => {
+  httpProxy(process.env.HOST_CONTA, {
+    proxyReqBodyDecorator: function (bodyContent, srcReq) {
+      return bodyContent;
+    },
+    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers['Content-Type'] = 'application/json';
+      return proxyReqOpts;
+    },
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      if (proxyRes.statusCode === 200) {
+        const str = Buffer.from(proxyResData).toString('utf-8');
+        const objBody = JSON.parse(str);
+        userRes.status(200);
+        return { transacaos: objBody };
+      } else {
+        userRes.status(401);
+        return { message: 'Um erro ocorreu ao buscar as transações.' };
+      }
+    },
+  })(req, res, next);
+});
+
 // GERENTE
 app.post(process.env.PATH_GERENTE + '/novo', verifyJWT, async (req, res, next) => {
   httpProxy(process.env.HOST_GERENTE, {
