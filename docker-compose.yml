@@ -2,32 +2,32 @@ version: "3"
 
 services:
   ### Bancos
-  # gerente-db:
-  #   # networks:
-  #   #   - gerente
-  #   container_name: gerente-db
-  #   image: postgres:15.1-alpine
-  #   restart: always
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #       - ./bantads-gerente/init.sql:/docker-entrypoint-initdb.d/init.sql
-  # cliente-db:
-  #   # networks: 
-  #   #   - cliente
-  #   container_name: cliente-db
-  #   image: postgres:15.1-alpine
-  #   restart: always
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #   ports:
-  #     - "5433:5433"
-  #   volumes:
-  #       - ./bantads-cliente/init.sql:/docker-entrypoint-initdb.d/init.sql
+  gerente-db:
+    # networks:
+    #   - gerente
+    container_name: gerente-db
+    image: postgres:15.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+        - ./bantads-gerente/init.sql:/docker-entrypoint-initdb.d/init.sql
+  cliente-db:
+    # networks: 
+    #   - cliente
+    container_name: cliente-db
+    image: postgres:15.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5433"
+    volumes:
+        - ./bantads-cliente/init.sql:/docker-entrypoint-initdb.d/init.sql
   auth-db:
     # networks:
     #   - auth
@@ -42,19 +42,19 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=bantads
     volumes:
         - ./bantads-autenticacao/init.js:/docker-entrypoint-initdb.d/init.js
-  # pgadmin:
-  #   # networks:
-  #   #   - auth
-  #   #   - cliente
-  #   #   - gerente
-  #   container_name: pgadmin
-  #   image: dpage/pgadmin4
-  #   environment:
-  #     - PGADMIN_DEFAULT_EMAIL=bantads@bantads.br
-  #     - PGADMIN_DEFAULT_PASSWORD=admin
-  #   ports:
-  #     - 5050:80
-  #   restart: unless-stopped
+  pgadmin:
+    # networks:
+    #   - auth
+    #   - cliente
+    #   - gerente
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=bantads@bantads.br
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - 5050:80
+    restart: unless-stopped
   mongo-express:
     container_name: mongo-express
     image: mongo-express
@@ -65,14 +65,12 @@ services:
     ports:
       - 8081:8081
     restart: always
-
-
   
-  # ### RabbitMQ
-  # rabbitmq:
-  #   container_name: rabbitmq
-  #   image: rabbitmq:3.11.8-management
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
+  ### RabbitMQ
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.11.8-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   
