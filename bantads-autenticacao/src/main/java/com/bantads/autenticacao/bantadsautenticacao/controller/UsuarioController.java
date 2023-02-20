@@ -33,6 +33,7 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String id) {
         try {
+            System.out.println(id);
             Optional<Usuario> usuarioOp = usuarioRepository.findById(id);
 
             if (usuarioOp.isPresent()) {
@@ -61,6 +62,24 @@ public class UsuarioController {
     ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
+            if (usuario != null) {
+                UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
+                return ResponseEntity.ok().body(response);
+            } else {
+                return ResponseEntity.status(401).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PostMapping("/create")
+    ResponseEntity<UsuarioDTO> create(@RequestBody UsuarioDTO usuarioDTO) {
+        try {
+            Usuario u = new Usuario(usuarioDTO.get_id(), usuarioDTO.getEmail(), usuarioDTO.getSenha(), usuarioDTO.getCargo(), usuarioDTO.isAtivo());
+            //@Id private String _id;
+   
+            Usuario usuario = usuarioRepository.save(u);
             if (usuario != null) {
                 UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
                 return ResponseEntity.ok().body(response);
