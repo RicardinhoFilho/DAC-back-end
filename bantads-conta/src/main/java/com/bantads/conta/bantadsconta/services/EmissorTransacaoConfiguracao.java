@@ -13,6 +13,7 @@ public class EmissorTransacaoConfiguracao {
 	private String inserirTransacaoBancoLeitura;
 	
 	 public  static final String inserirContaBancoLeitura = "FILA_CONTA_INSERIR";
+	 public  static final String updateContaBancoLeitura = "FILA_CONTA_UPDATE";
 	
 	@Bean
 	public Queue inserirTransacaoBancoLeitura() {
@@ -22,6 +23,12 @@ public class EmissorTransacaoConfiguracao {
 	@Bean
 	public Queue inserirContaBancoLeitura() {
 		return new Queue(inserirContaBancoLeitura, true);
+		
+	}
+
+	@Bean
+	public Queue updateContaBancoLeitura() {
+		return new Queue(updateContaBancoLeitura, true);
 		
 	}
 

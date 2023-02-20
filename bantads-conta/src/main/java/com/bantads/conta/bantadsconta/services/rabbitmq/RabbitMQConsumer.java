@@ -95,6 +95,9 @@ public class RabbitMQConsumer {
         var NOTIFICACAO = objectMapper.writeValueAsString(notificacao);
         System.out.println("Atualização de conta salva(" + msg + ") ");
         rabbitTemplate.convertAndSend(FILA_NOTIFICA_UPDATE_CONTA, NOTIFICACAO);
+        var json = objectMapper.writeValueAsString(contaByDb);
+        rabbitTemplate.convertAndSend(EmissorTransacaoConfiguracao.updateContaBancoLeitura, json);
+
         System.out.println("Envio de email inserido na lista");
     }
 
@@ -154,5 +157,21 @@ public class RabbitMQConsumer {
             e.printStackTrace();
         }
     }
+
+    @RabbitListener(queues = EmissorTransacaoConfiguracao.updateContaBancoLeitura)
+    public void updateContaBancoLeitura(String msg) throws JsonMappingException, JsonProcessingException {
+        try {
+            ContaR conta = objectMapper.readValue(msg, ContaR.class);
+
+            contaRRepository.save(conta);
+
+            System.out.println(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    
 
 }
