@@ -108,6 +108,11 @@ public class RabbitMQConsumer {
 
         var conta = contaRepository.findByIdGerente(id_gerente_mais_clientes).get(0);
         contaRepository.updateGerenteConta(id_gerente, conta.getId());
+
+         //ATUALIZAR NO BANCO DE LEITURA
+         var contaByDb = contaRepository.findById(conta.getId()).get();
+         var json = objectMapper.writeValueAsString(contaByDb);
+         rabbitTemplate.convertAndSend(EmissorTransacaoConfiguracao.inserirContaBancoLeitura, json);
         System.out.println("Atualizada conta (" + conta.getId() + ") ");
     }
 
@@ -120,6 +125,11 @@ public class RabbitMQConsumer {
         for (ContaCUD contaCUD : contas) {
             var id_gerente_menos_clientes = contaRepository.idGerenteMenosClientesMenosAtual(id_gerente).get(0);
             contaRepository.updateGerenteConta(id_gerente_menos_clientes, contaCUD.getId());
+            //ATUALIZAR NO BANCO DE LEITURA
+            var contaByDb = contaRepository.findById(contaCUD.getId()).get();
+            var json = objectMapper.writeValueAsString(contaByDb);
+            rabbitTemplate.convertAndSend(EmissorTransacaoConfiguracao.inserirContaBancoLeitura, json);
+
             System.out.println("Atualizada conta (" + contaCUD.getId() + ") ");
         }
 
@@ -170,8 +180,5 @@ public class RabbitMQConsumer {
             e.printStackTrace();
         }
     }
-
-
-    
 
 }
