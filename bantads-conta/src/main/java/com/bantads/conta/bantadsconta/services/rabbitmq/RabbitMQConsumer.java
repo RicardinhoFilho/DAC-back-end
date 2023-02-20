@@ -17,6 +17,7 @@ import com.bantads.conta.bantadsconta.model.Notificacao;
 import com.bantads.conta.bantadsconta.model.CUD.ContaCUD;
 import com.bantads.conta.bantadsconta.model.R.ContaR;
 import com.bantads.conta.bantadsconta.model.R.TransacaoR;
+import com.bantads.conta.bantadsconta.services.EmissorTransacaoConfiguracao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +36,7 @@ public class RabbitMQConsumer {
     public static final String FILA_ATRIBUI_CONTA_GERENTE = "FILA_ATRIBUI_CONTA_GERENTE";
     public static final String FILA_DISTRIBUI_CONTAS_GERENTE = "FILA_DISTRIBUI_CONTAS_GERENTE";
     public static final String FILA_TRANSACAO_INSERIR = "FILA_TRANSACAO_INSERIR";
+
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
@@ -57,8 +59,12 @@ public class RabbitMQConsumer {
                 id_gerente_menos_clientes,
                 conta.getSalario());
 
-        contaRepository.save(c);
+        var t = contaRepository.save(c);
+        var json = objectMapper.writeValueAsString(t);
+        rabbitTemplate.convertAndSend(EmissorTransacaoConfiguracao.inserirContaBancoLeitura, json);
+
         System.out.println("Salvo (" + msg + ") " + conta.getIdUsuario());
+        System.out.println(msg);
     }
 
     @RabbitListener(queues = FILA_ERRO_NOVO_CLIENTE)
@@ -115,25 +121,38 @@ public class RabbitMQConsumer {
         }
 
     }
-    
+
     @RabbitListener(queues = FILA_TRANSACAO_INSERIR)
     public void transacaoInserir(String msg) throws JsonMappingException, JsonProcessingException {
-    	try {
-	    	TransacaoContaDTO transacaoConta = objectMapper.readValue(msg, TransacaoContaDTO.class);
-	    	
-	    	TransacaoR transacaoR = mapper.map(transacaoConta.getTransacaoCUD(), TransacaoR.class);
-	    	transacaoRRepository.save(transacaoR);
-	    	
-	    	ContaR origem = mapper.map(transacaoConta.getOrigem(), ContaR.class);
-	    	contaRRepository.save(origem);
-	    	
-	    	if(transacaoConta.getDestino() != null) {
-	    		ContaR destino = mapper.map(transacaoConta.getDestino(), ContaR.class);
-	    		contaRRepository.save(destino);
-	    	}
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
+        try {
+            TransacaoContaDTO transacaoConta = objectMapper.readValue(msg, TransacaoContaDTO.class);
+
+            TransacaoR transacaoR = mapper.map(transacaoConta.getTransacaoCUD(), TransacaoR.class);
+            transacaoRRepository.save(transacaoR);
+
+            ContaR origem = mapper.map(transacaoConta.getOrigem(), ContaR.class);
+            contaRRepository.save(origem);
+
+            if (transacaoConta.getDestino() != null) {
+                ContaR destino = mapper.map(transacaoConta.getDestino(), ContaR.class);
+                contaRRepository.save(destino);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RabbitListener(queues = EmissorTransacaoConfiguracao.inserirContaBancoLeitura)
+    public void inserirContaBancoLeitura(String msg) throws JsonMappingException, JsonProcessingException {
+        try {
+            ContaR conta = objectMapper.readValue(msg, ContaR.class);
+
+            contaRRepository.save(conta);
+
+            System.out.println(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
