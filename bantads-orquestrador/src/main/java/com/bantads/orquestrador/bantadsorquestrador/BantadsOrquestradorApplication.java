@@ -15,7 +15,7 @@ import com.bantads.orquestrador.bantadsorquestrador.coneccao.RabbitMQConnection;
 public class BantadsOrquestradorApplication {
 
 	public static void main(String[] args) {
-		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost", 5672);
+		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("rabbitmq", 5672);
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
 		RabbitMQConnection conn = new RabbitMQConnection(new RabbitAdmin(connectionFactory));
