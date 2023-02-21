@@ -108,7 +108,17 @@ public class RabbitMQConsumer {
                 userFromDb.get().setNumero(cliente.getNumero());
                 userFromDb.get().setComplemento(cliente.getComplemento());
                 userFromDb.get().setAtivo(cliente.isAtivo());
-                clienteRepository.save(userFromDb.get());
+                
+                var t = clienteRepository.save(userFromDb.get());
+
+                Usuario uAuth = new Usuario(t.getId().toString(), t.getEmail(), t.getSenha(),
+                    "CLIENTE", true);
+
+            var jsonAUTH = objectMapper.writeValueAsString(uAuth);
+            //
+            System.out.println("enviado para auth com senha "+jsonAUTH);
+            rabbitTemplate.convertAndSend(FILA_AUTENTICACAO, jsonAUTH);
+
                 mailService.sendMail(cliente.getEmail(), "BANTADS - Conta atualizada com sucesso!",
                         "Sua conta foi atualizada com sucesso!!");
                 // clienteRepository.;

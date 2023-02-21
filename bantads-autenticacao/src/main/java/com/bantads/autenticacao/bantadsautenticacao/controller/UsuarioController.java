@@ -19,6 +19,7 @@ import com.bantads.autenticacao.bantadsautenticacao.data.UsuarioRepository;
 import com.bantads.autenticacao.bantadsautenticacao.dto.UsuarioDTO;
 import com.bantads.autenticacao.bantadsautenticacao.model.Usuario;
 import com.bantads.autenticacao.bantadsautenticacao.tools.Security;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @CrossOrigin
 @RestController
@@ -29,6 +30,9 @@ public class UsuarioController {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String id) {
@@ -48,11 +52,12 @@ public class UsuarioController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<UsuarioDTO>> getUsuarios() {
+    public ResponseEntity<String> getUsuarios() {
         try {
             List<Usuario> usuarios = usuarioRepository.findAll();
             System.out.println(usuarios.get(3).getEmail());
-            List<UsuarioDTO> response = Arrays.asList(mapper.map(usuarios, UsuarioDTO[].class));
+        
+           String response = objectMapper.writeValueAsString(usuarios);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
@@ -63,8 +68,10 @@ public class UsuarioController {
     ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
+            System.out.println(usuarioDTO.getEmail()+ " " + Security.hash(usuarioDTO.getSenha()));
             if (usuario != null) {
                 UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
+              
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
