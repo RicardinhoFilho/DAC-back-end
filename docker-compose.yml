@@ -87,7 +87,7 @@ services:
       context: ./bantads-orquestrador
     container_name: bantads-orquestrador
     ports:
-      - "3030:3030"
+      - "5005:8080"
     volumes:
       - ./bantads-orquestrador/:/app
   gerente:
@@ -102,12 +102,26 @@ services:
     depends_on:
       - gerente-db
     ports:
-      - "5000:8080"
+      - "5004:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://gerente-db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  gateway:
+    container_name: gateway
+    networks:
+      - gerente
+    image: "gateway:latest"
+    build:
+      context: ./bantads-gateway
+      # dockerfile: Dockerfile
+    volumes:
+      - ./bantads-gateway/:/app
+      - /app/node_modules
+    ports:
+      - "5000:5000"
 
 ## Networks
 networks:
