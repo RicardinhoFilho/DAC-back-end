@@ -12,19 +12,27 @@ import javax.persistence.Table;
 @Entity
 @Table(name="transacao")
 public class TransacaoR {
-	private int id;
-	private int idCliente;
+	@Id
+	@Column(name="id_transacao")
+	private Long id;
+	@Column(name="id_cliente")
+	private Long idCliente;
+	@Column(name="tipo_transacao")
 	private int tipoTransacao;
+	@Column(name="valor_transacao")
 	private double valorTransacao;
+	@Column(name="saldo")
 	private double saldo;
+	@Column(name="data_transacao")
 	private Date data;
+	@Column(name="destinatario")
 	private int destinatario;
 	
 	public TransacaoR() {
 		super();
 	}
 	
-	public TransacaoR(int id, int idCliente, int tipoTransacao, double valorTransacao, double saldo,
+	public TransacaoR(Long id, Long idCliente, int tipoTransacao, double valorTransacao, double saldo,
 			Date data, int destinatario) {
 		super();
 		this.id = id;
@@ -36,27 +44,22 @@ public class TransacaoR {
 		this.destinatario = destinatario;
 	}
 
-    @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id_transacao")
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	@Column(name="id_cliente")
-	public int getIdCliente() {
+	public Long getIdCliente() {
 		return idCliente;
 	}
 
-	public void setIdCliente(int idCliente) {
+	public void setIdCliente(Long idCliente) {
 		this.idCliente = idCliente;
 	}
 
-	@Column(name="tipo_transacao")
 	public int getTipoTransacao() {
 		return tipoTransacao;
 	}
@@ -65,7 +68,7 @@ public class TransacaoR {
 		this.tipoTransacao = tipoTransacao;
 	}
 
-	@Column(name="valor_transacao")
+	
 	public double getValorTransacao() {
 		return valorTransacao;
 	}
@@ -74,7 +77,7 @@ public class TransacaoR {
 		this.valorTransacao = valorTransacao;
 	}
 
-	@Column(name="saldo")
+	
 	public double getSaldo() {
 		return saldo;
 	}
@@ -83,7 +86,7 @@ public class TransacaoR {
 		this.saldo = saldo;
 	}
 
-	@Column(name="data_transacao")
+	
 	public Date getData() {
 		return data;
 	}
@@ -92,7 +95,7 @@ public class TransacaoR {
 		this.data = data;
 	}
 	
-	@Column(name="destinatario")
+	
 	public int getDestinatario() {
 		return destinatario;
 	}

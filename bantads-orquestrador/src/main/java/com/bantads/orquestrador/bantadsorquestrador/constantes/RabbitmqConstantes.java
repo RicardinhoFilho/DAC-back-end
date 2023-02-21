@@ -3,7 +3,7 @@ package com.bantads.orquestrador.bantadsorquestrador.constantes;
 public class RabbitmqConstantes {
     // CREATE_CLIENTE
     public static final String FILA_REGISTRO_CLIENTE = "FILA_REGISTRO_CLIENTE";
-    public static final String FILA_AUTENTICACAO_CLIENTE = "FILA_AUTENTICACAO_CLIENTE";
+    public static final String FILA_AUTENTICACAO_CLIENTE = "FILA_AUTENTICACAO";
     public static final String FILA_REGISTRO_CONTA_CLIENTE = "FILA_REGISTRO_CONTA_CLIENTE";
 
     // ROLLBACK_CREATE_CLIENTE
