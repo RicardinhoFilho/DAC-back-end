@@ -10,14 +10,14 @@ public class TransacaoDTO implements Serializable {
 	private double valorTransacao;
 	private double saldo;
 	private Date data;
-	private Long destinatario;
+	private int destinatario;
 	
 	public TransacaoDTO() {
 		super();
 	}
 	
 	public TransacaoDTO(Long id, Long idCliente, int tipoTransacao, double valorTransacao, double saldo,
-			Date data, Long destinatario) {
+			Date data, int destinatario) {
 		super();
 		this.id = id;
 		this.idCliente = idCliente;
@@ -76,11 +76,11 @@ public class TransacaoDTO implements Serializable {
 		this.data = data;
 	}
 	
-	public Long getDestinatario() {
+	public int getDestinatario() {
 		return destinatario;
 	}
 
-	public void setDestinatario(Long destinatario) {
+	public void setDestinatario(int destinatario) {
 		this.destinatario = destinatario;
 	}
 }

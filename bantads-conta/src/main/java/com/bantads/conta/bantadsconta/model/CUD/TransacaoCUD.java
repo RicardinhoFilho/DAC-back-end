@@ -14,20 +14,28 @@ import com.bantads.conta.bantadsconta.DTO.TransacaoDTO;
 @Entity
 @Table(name="transacao")
 public class TransacaoCUD {
+    @Id
+	@Column(name="id_transacao")
 	private Long id;
+    @Column(name="id_cliente")
 	private Long idCliente;
+    @Column(name="tipo_transacao")
 	private int tipoTransacao;
+    @Column(name="valor_transacao")
 	private double valorTransacao;
+    @Column(name="saldo")
 	private double saldo;
+    @Column(name="data_transacao")
 	private Date data;
-	private Long destinatario;
+    @Column(name="destinatario")
+	private int destinatario;
 	
 	public TransacaoCUD() {
 		super();
 	}
 	
 	public TransacaoCUD(Long id, Long idCliente, int tipoTransacao, double valorTransacao, double saldo,
-			Date data, Long destinatario) {
+			Date data, int destinatario) {
 		super();
 		this.id = id;
 		this.idCliente = idCliente;
@@ -47,9 +55,6 @@ public class TransacaoCUD {
     	//this.saga = UUID.randomUUID();
     }
 	
-        @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id_transacao")
 	public Long getId() {
 		return id;
 	}
@@ -58,7 +63,6 @@ public class TransacaoCUD {
 		this.id = id;
 	}
 
-	@Column(name="id_cliente")
 	public Long getIdCliente() {
 		return idCliente;
 	}
@@ -67,7 +71,7 @@ public class TransacaoCUD {
 		this.idCliente = idCliente;
 	}
 
-	@Column(name="tipo_transacao")
+	
 	public int getTipoTransacao() {
 		return tipoTransacao;
 	}
@@ -76,7 +80,7 @@ public class TransacaoCUD {
 		this.tipoTransacao = tipoTransacao;
 	}
 
-	@Column(name="valor_transacao")
+	
 	public double getValorTransacao() {
 		return valorTransacao;
 	}
@@ -85,7 +89,7 @@ public class TransacaoCUD {
 		this.valorTransacao = valorTransacao;
 	}
 
-	@Column(name="saldo")
+	
 	public double getSaldo() {
 		return saldo;
 	}
@@ -94,7 +98,7 @@ public class TransacaoCUD {
 		this.saldo = saldo;
 	}
 
-	@Column(name="data_transacao")
+	
 	public Date getData() {
 		return data;
 	}
@@ -103,12 +107,12 @@ public class TransacaoCUD {
 		this.data = data;
 	}
 	
-	@Column(name="destinatario")
-	public Long getDestinatario() {
+	
+	public int getDestinatario() {
 		return destinatario;
 	}
 
-	public void setDestinatario(Long destinatario) {
+	public void setDestinatario(int destinatario) {
 		this.destinatario = destinatario;
 	}
 }
