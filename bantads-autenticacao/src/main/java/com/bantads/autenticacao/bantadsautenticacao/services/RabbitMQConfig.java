@@ -1,4 +1,4 @@
-package com.bantads.services;
+package com.bantads.autenticacao.bantadsautenticacao.services;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

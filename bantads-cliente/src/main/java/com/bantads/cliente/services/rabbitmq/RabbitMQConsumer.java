@@ -7,6 +7,7 @@ package com.bantads.cliente.services.rabbitmq;
 import com.bantads.cliente.dto.ClienteDTO;
 import com.bantads.cliente.model.Cliente;
 import com.bantads.cliente.model.Notificacao;
+import com.bantads.cliente.model.Usuario;
 import com.bantads.cliente.repository.ClienteRepository;
 import com.bantads.cliente.services.email.MailSenderService;
 import com.bantads.cliente.utils.Security;
@@ -33,6 +34,7 @@ public class RabbitMQConsumer {
     public static final String FILA_ERRO_UPDATE_CLIENTE = "FILA_ERRO_UPDATE_CLIENTE";
     public static final String FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO = "FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO";
     public static final String FILA_NOTIFICA_UPDATE_CONTA = "FILA_NOTIFICA_UPDATE_CONTA";
+    private static final String FILA_AUTENTICACAO = "FILA_AUTENTICACAO";
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -62,6 +64,14 @@ public class RabbitMQConsumer {
                     cliente.isAtivo());
 
             clienteRepository.save(u);
+            /* String id, String email, String senha, String cargo, boolean ativo */
+            Usuario uAuth = new Usuario(cliente.getId().toString(), cliente.getEmail(), u.getSenha(),
+                    "CLIENTE", false);
+
+            var jsonAUTH = objectMapper.writeValueAsString(uAuth);
+            //
+            System.out.println("enviado para auth com senha "+jsonAUTH);
+            rabbitTemplate.convertAndSend(FILA_AUTENTICACAO, jsonAUTH);
             System.out.println("Salvo (" + u.getNome() + ") " + msg);
             mailService.sendMail(cliente.getEmail(), "BANTADS - Conta criada com sucesso!",
                     "Sua conta foi criada com sucesso!!");
@@ -70,7 +80,8 @@ public class RabbitMQConsumer {
             // ROLLBACK
             System.out.println("Erro ao salvar cliente (" + cliente.getNome() + ") " + msg);
             var id_erro = objectMapper.writeValueAsString(cliente.getId());
-
+            System.out.println(e.getMessage());
+            
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE, id_erro);
             rabbitTemplate.convertAndSend(FILA_ERRO_NOVO_CLIENTE_AUTENTICACAO, id_erro);
             mailService.sendMail(cliente.getEmail(), "BANTADS - Não foi possível criar sua conta!",

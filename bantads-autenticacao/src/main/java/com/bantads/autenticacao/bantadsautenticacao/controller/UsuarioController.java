@@ -51,6 +51,7 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioDTO>> getUsuarios() {
         try {
             List<Usuario> usuarios = usuarioRepository.findAll();
+            System.out.println(usuarios.get(3).getEmail());
             List<UsuarioDTO> response = Arrays.asList(mapper.map(usuarios, UsuarioDTO[].class));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -77,6 +78,7 @@ public class UsuarioController {
     ResponseEntity<UsuarioDTO> create(@RequestBody UsuarioDTO usuarioDTO) {
         try {
             Usuario u = new Usuario(usuarioDTO.get_id(), usuarioDTO.getEmail(), usuarioDTO.getSenha(), usuarioDTO.getCargo(), usuarioDTO.isAtivo());
+            
             //@Id private String _id;
    
             Usuario usuario = usuarioRepository.save(u);

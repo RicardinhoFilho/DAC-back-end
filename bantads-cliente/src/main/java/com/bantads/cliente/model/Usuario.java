@@ -1,42 +1,33 @@
-package com.bantads.autenticacao.bantadsautenticacao.model;
+
+package com.bantads.cliente.model;
 
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-@Document(collection = "usuario")
 public class Usuario implements Serializable {
-    @Id
+
     private String _id;
     private String email;
     private String senha;
     private String cargo;
     private boolean ativo;
 
-    public String getEmail() {
-        return email;
+    public String getCargo() {
+        return cargo;
     }
 
-    public String get_id() {
-        return _id;
+    public String getEmail() {
+        return email;
     }
 
     public String getSenha() {
         return senha;
     }
 
+    public String get_id() {
+        return _id;
+    }
     public boolean isAtivo() {
         return ativo;
-    }
-
-    public String getCargo() {
-        return cargo;
     }
 
     public Usuario(String id, String email, String senha, String cargo, boolean ativo) {
@@ -44,10 +35,6 @@ public class Usuario implements Serializable {
         this.email = email;
         this.cargo = cargo;
         this.ativo = ativo;
+        this.senha = senha;
     }
-
-    public Usuario() {
-
-    }
-
 }
