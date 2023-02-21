@@ -52,7 +52,7 @@ public class TransacaoCUD {
     	this.idCliente = transacao.getIdCliente();
     	this.tipoTransacao = transacao.getTipoTransacao();
     	this.valorTransacao = transacao.getValorTransacao();
-    	//this.saga = UUID.randomUUID();
+    	this.saldo = transacao.getSaldo();
     }
 	
 	public Long getId() {
