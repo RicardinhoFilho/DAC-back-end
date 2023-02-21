@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.bantads.autenticacao.bantadsautenticacao.data.UsuarioRepository;
 import com.bantads.autenticacao.bantadsautenticacao.model.Usuario;
+import com.bantads.autenticacao.bantadsautenticacao.tools.Security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +22,9 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = FILA_AUTENTICACAO)
     public void create(String msg) throws JsonMappingException, JsonProcessingException {
         var usuario = objectMapper.readValue(msg, Usuario.class);
-     
+       usuario.setSenha(Security.hash(usuario.getSenha())); 
         try {
+            
             System.out.println("AQUI: "+ msg);
             repository.save(usuario);
         } catch (Exception e) {

@@ -39,11 +39,16 @@ public class Usuario implements Serializable {
         return cargo;
     }
 
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
     public Usuario(String id, String email, String senha, String cargo, boolean ativo) {
         this._id = id;
         this.email = email;
         this.cargo = cargo;
         this.ativo = ativo;
+        this.senha = senha;
     }
 
     public Usuario() {

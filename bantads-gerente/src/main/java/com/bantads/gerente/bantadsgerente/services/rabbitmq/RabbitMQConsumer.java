@@ -45,7 +45,7 @@ public class RabbitMQConsumer {
             Gerente g = new Gerente(
                     gerente.getNome(),
                     gerente.getEmail(),
-                    Security.hash(gerente.getSenha()),
+                    gerente.getSenha(),
                     gerente.getCpf(),
                     gerente.getTelefone(),
                     gerente.getCargo());
@@ -76,8 +76,8 @@ public class RabbitMQConsumer {
         try {
             System.out.println(msg);
             gerenteRepository.deleteById(gerente);
-            Usuario uAuth = new Usuario(gerente.toString(), "g.getEmail()", " g.getSenha()",
-                    "GERENTE", false);
+            Usuario uAuth = new Usuario(gerente.toString(), null, null,
+            null, false);
 
             var jsonAUTH = objectMapper.writeValueAsString(uAuth);
             //

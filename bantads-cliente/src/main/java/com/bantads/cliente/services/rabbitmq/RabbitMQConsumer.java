@@ -65,7 +65,7 @@ public class RabbitMQConsumer {
 
             clienteRepository.save(u);
             /* String id, String email, String senha, String cargo, boolean ativo */
-            Usuario uAuth = new Usuario(cliente.getId().toString(), cliente.getEmail(), u.getSenha(),
+            Usuario uAuth = new Usuario(cliente.getId().toString(), cliente.getEmail(), cliente.getSenha(),
                     "CLIENTE", false);
 
             var jsonAUTH = objectMapper.writeValueAsString(uAuth);
@@ -111,7 +111,7 @@ public class RabbitMQConsumer {
                 
                 var t = clienteRepository.save(userFromDb.get());
 
-                Usuario uAuth = new Usuario(t.getId().toString(), t.getEmail(), t.getSenha(),
+                Usuario uAuth = new Usuario(t.getId().toString(), t.getEmail(), cliente.getSenha(),
                     "CLIENTE", true);
 
             var jsonAUTH = objectMapper.writeValueAsString(uAuth);

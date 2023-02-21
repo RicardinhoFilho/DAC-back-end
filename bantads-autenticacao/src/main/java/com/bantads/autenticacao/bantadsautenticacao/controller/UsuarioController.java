@@ -56,8 +56,8 @@ public class UsuarioController {
         try {
             List<Usuario> usuarios = usuarioRepository.findAll();
             System.out.println(usuarios.get(3).getEmail());
-        
-           String response = objectMapper.writeValueAsString(usuarios);
+
+            String response = objectMapper.writeValueAsString(usuarios);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
@@ -68,10 +68,10 @@ public class UsuarioController {
     ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
-            System.out.println(usuarioDTO.getEmail()+ " " + Security.hash(usuarioDTO.getSenha()));
+            System.out.println(usuarioDTO.getEmail() + " " + usuarioDTO.getSenha() + " " +Security.hash(usuarioDTO.getSenha()) );
             if (usuario != null) {
                 UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
-              
+
                 return ResponseEntity.ok().body(response);
             } else {
                 return ResponseEntity.status(401).build();
@@ -84,10 +84,11 @@ public class UsuarioController {
     @PostMapping("/create")
     ResponseEntity<UsuarioDTO> create(@RequestBody UsuarioDTO usuarioDTO) {
         try {
-            Usuario u = new Usuario(usuarioDTO.get_id(), usuarioDTO.getEmail(), usuarioDTO.getSenha(), usuarioDTO.getCargo(), usuarioDTO.isAtivo());
-            
-            //@Id private String _id;
-   
+            Usuario u = new Usuario(usuarioDTO.get_id(), usuarioDTO.getEmail(),  Security.hash(usuarioDTO.getSenha()),
+                    usuarioDTO.getCargo(), usuarioDTO.isAtivo());
+
+            // @Id private String _id;
+System.out.println();
             Usuario usuario = usuarioRepository.save(u);
             if (usuario != null) {
                 UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
