@@ -70,7 +70,7 @@ public class RabbitMQConsumer {
     }
 
     @RabbitListener(queues = FILA_DELETE_GERENTE)
-    public void deleteCliente(String msg) throws JsonMappingException, JsonProcessingException {
+    public void deleteGerente(String msg) throws JsonMappingException, JsonProcessingException {
         var gerente = objectMapper.readValue(msg, Long.class);
 
         try {

@@ -10,6 +10,7 @@ import com.bantads.autenticacao.bantadsautenticacao.tools.Security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Component
 public class RabbitMQConsumer {
 
@@ -22,15 +23,22 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = FILA_AUTENTICACAO)
     public void create(String msg) throws JsonMappingException, JsonProcessingException {
         var usuario = objectMapper.readValue(msg, Usuario.class);
-       usuario.setSenha(Security.hash(usuario.getSenha())); 
+
         try {
-            
-            System.out.println("AQUI: "+ msg);
-            repository.save(usuario);
+            //ATUALIZAÇÃO OU CRIAÇÃO
+            if (usuario.getEmail() != null) {
+                usuario.setSenha(Security.hash(usuario.getSenha()));
+                System.out.println("AQUI: " + msg);
+                repository.save(usuario);
+            } else {
+                //EXCLUSÃO
+                repository.deleteById(usuario.get_id());
+            }
+
         } catch (Exception e) {
             System.out.println(e);
 
         }
 
-   }
+    }
 }

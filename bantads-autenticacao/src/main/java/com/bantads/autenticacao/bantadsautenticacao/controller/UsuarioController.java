@@ -65,12 +65,12 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO usuarioDTO) {
+    ResponseEntity<String> login(@RequestBody UsuarioDTO usuarioDTO) {
         try {
             Usuario usuario = usuarioRepository.login(usuarioDTO.getEmail(), Security.hash(usuarioDTO.getSenha()));
             System.out.println(usuarioDTO.getEmail() + " " + usuarioDTO.getSenha() + " " +Security.hash(usuarioDTO.getSenha()) );
             if (usuario != null) {
-                UsuarioDTO response = mapper.map(usuario, UsuarioDTO.class);
+                String response = objectMapper.writeValueAsString(usuario);
 
                 return ResponseEntity.ok().body(response);
             } else {

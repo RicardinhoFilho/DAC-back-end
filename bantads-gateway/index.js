@@ -116,8 +116,8 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
 });
 
 // CLIENTE
-app.post(process.env.PATH_CLIENTE + '/cadastro', async (req, res, next) => {
-  httpProxy(process.env.HOST_CLIENTE, {
+app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
+  httpProxy(process.env.HOST_ORQUESTRADOR, {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
         userRes.status(201);
