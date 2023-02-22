@@ -343,11 +343,19 @@ app.get(`${process.env.PATH_CONTA}/:id`, verifyJWT, (req, res, next) => {
 });
 
 //TRANSACAO
-app.post(process.env.PATH_CONTA + '/transacaos', verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CONTA, {
+app.post('/transacaos', async (req, res, next) => {
+  httpProxy('http://localhost:5003', {
+    proxyReqBodyDecorator: function (bodyContent, srcReq) {
+        return bodyContent;
+    },
+    proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers['Content-Type'] = 'application/json';
+      proxyReqOpts.method = 'POST';
+      return proxyReqOpts;
+    },
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
-      if (proxyRes.statusCode == 201) {
-        userRes.status(201);
+      if (proxyRes.statusCode == 200) {
+        userRes.status(200);
         return { message: 'Transacao inserida com sucesso.' };
       } else {
         userRes.status(proxyRes.statusCode);
@@ -357,13 +365,14 @@ app.post(process.env.PATH_CONTA + '/transacaos', verifyJWT, async (req, res, nex
   })(req, res, next);
 });
 
-app.get(process.env.PATH_CONTA + '/transacaos', verifyJWT, async (req, res, next) => {
-  httpProxy(process.env.HOST_CONTA, {
+app.get('/transacaos', async (req, res, next) => {
+  httpProxy('http://localhost:5003', {
     proxyReqBodyDecorator: function (bodyContent, srcReq) {
       return bodyContent;
     },
     proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
       proxyReqOpts.headers['Content-Type'] = 'application/json';
+      proxyReqOpts.method = 'GET';
       return proxyReqOpts;
     },
     userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
@@ -371,10 +380,10 @@ app.get(process.env.PATH_CONTA + '/transacaos', verifyJWT, async (req, res, next
         const str = Buffer.from(proxyResData).toString('utf-8');
         const objBody = JSON.parse(str);
         userRes.status(200);
-        return { transacaos: objBody };
+        return objBody;
       } else {
-        userRes.status(401);
-        return { message: 'Um erro ocorreu ao buscar as transações.' };
+       userRes.status(401);
+       return { message: 'Um erro ocorreu ao buscar as transações.' };
       }
     },
   })(req, res, next);
