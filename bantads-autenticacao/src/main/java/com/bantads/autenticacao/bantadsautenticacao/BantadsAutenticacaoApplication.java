@@ -1,19 +1,18 @@
 package com.bantads.autenticacao.bantadsautenticacao;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@EnableRabbit
 @SpringBootApplication
 public class BantadsAutenticacaoApplication {
 
 	public static void main(String[] args) {
-            SpringApplication.run(BantadsAutenticacaoApplication.class, args);
+
+		SpringApplication.run(BantadsAutenticacaoApplication.class, args);
 	}
 
 	@Bean

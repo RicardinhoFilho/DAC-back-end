@@ -115,16 +115,17 @@ app.get(`${process.env.PATH_AUTENTICACAO}/:id`, verifyJWT, (req, res, next) => {
   })(req, res, next);
 });
 
-// CLIENTE
+// CRIAÇÃO CLIENTE + CONTA
 app.post(process.env.PATH_ORQUESTRADOR + '/cliente', async (req, res, next) => {
-  httpProxy(process.env.HOST_ORQUESTRADOR, {
+  console.log(req.body)
+  httpProxy(process.env.HOST_ORQUESTRADOR+'/cliente', {
     userResDecorator: function (proxyRes, _proxyResData, _userReq, userRes) {
       if (proxyRes.statusCode == 201) {
         userRes.status(201);
         return { message: 'Cadastro realizado com sucesso. Consulte seu e-mail para próximos passos.' };
       } else {
         userRes.status(proxyRes.statusCode);
-        return { message: 'Um erro ocorreu em seu cadastro. Tente novamente.' };
+        return { message: 'Náo rodou' };
       }
     },
   })(req, res, next);
